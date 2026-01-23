@@ -1,38 +1,54 @@
-import { LayoutDashboard, Package, ShoppingCart } from 'lucide-react'
+"use client"
+import { useGlobalState } from '@/store/intex'
+import { LayoutDashboard, Menu, Package, ShoppingCart } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import React from 'react'
 
 export const SideBar = () => {
+
+  const { isSideBarCollapsed, setIsSideBarCollapsed } = useGlobalState();
+
+  const sideBarClassNames = `fixed flex flex-col bg-white overflow-hidden shadow-md z-40 h-full transition-all duration-300 ${isSideBarCollapsed ? "w-16" : "w-64"}`
+
   return (
-    <div className='fixed left-0 top-0 h-full w-64 bg-white shadow-md z-40 overflow-y-auto'>
-      <div className='flex flex-col items-left justify-center pt-8 pb-4 p-3 '>
-        <h1 className='text-2xl font-bold text-red-600'>Minimarket</h1>
-        <h1 className='text-2xl font-bold text-red-600'>Daniela</h1>
+    <div className={sideBarClassNames}>
+      <div className={`flex items-center justify-between w-full ${isSideBarCollapsed ? "px-5.5 pt-5" : "px-8 pt-2"}`}>
+        {
+          !isSideBarCollapsed && (
+            <Link href={"/"}>
+              <div className='flex items-center justify-center overflow-hidden transition-all'>
+                <Image src={"/logo-minimarket-daniela.jpeg"} alt="Logo Minimarket Daniela" width={200} height={80} loading="eager" priority className="scale-230 transition-all"/>
+              </div>
+            </Link>
+          )
+        }
+        <button className='hover:bg-gray-100  rounded-full' onClick={() => setIsSideBarCollapsed(!isSideBarCollapsed)}>
+          <Menu size={isSideBarCollapsed ? 20 : 25}/>
+        </button>
+        
       </div>
 
-      <nav className="mt-8 flex flex-col gap-2 px-4">
-        {/* Enlace al Dashboard */}
-        <Link href="/" className="flex items-center gap-3 rounded-lg bg-blue-50 px-4 py-3 text-blue-700 transition-colors">
+      <nav className="mt-8 flex flex-col gap-2 px-2">
+        <Link href="/" className={`flex items-center rounded-lg bg-blue-50 py-3 text-blue-700 transition-all duration-300 ${isSideBarCollapsed ? "gap-0 justify-center px-2" : "gap-3 px-4"}`}>
           <LayoutDashboard size={20} />
-          <span className="font-medium">Dashboard</span>
+          {!isSideBarCollapsed && <span className="font-medium">Dashboard</span>}
         </Link>
 
-        {/* Enlace al Inventario */}
-        <Link href="/inventory" className="flex items-center gap-3 rounded-lg px-4 py-3 text-gray-500 hover:bg-gray-100 transition-colors">
+        <Link href="/inventory" className={`flex items-center rounded-lg py-3 text-gray-500 hover:bg-gray-100 transition-all duration-300 ${isSideBarCollapsed ? "gap-0 justify-center px-2" : "gap-3 px-4"}`}>
           <Package size={20} />
-          <span className="font-medium">Inventario</span>
+          {!isSideBarCollapsed && <span className="font-medium">Inventario</span>}
         </Link>
 
-         {/* Enlace a Productos */}
-         <Link href="/products" className="flex items-center gap-3 rounded-lg px-4 py-3 text-gray-500 hover:bg-gray-100 transition-colors">
+         <Link href="/products" className={`flex items-center rounded-lg py-3 text-gray-500 hover:bg-gray-100 transition-all duration-300 ${isSideBarCollapsed ? "gap-0 justify-center px-2" : "gap-3 px-4"}`}>
           <ShoppingCart size={20} />
-          <span className="font-medium">Productos</span>
+          {!isSideBarCollapsed && <span className="font-medium">Productos</span>}
         </Link>
       </nav>
 
       {/* 3. Footer del menú */}
       <div className="absolute bottom-0 w-full p-4 text-center text-xs text-gray-400">
-        &copy; 2026 Minimarket
+        {!isSideBarCollapsed && <p>&copy; 2026 Minimarket Daniela</p>}
       </div>
 
     </div>
