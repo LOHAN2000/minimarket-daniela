@@ -1,2 +1,19 @@
 @import "tailwindcss";
 
+/* Ajustes básicos */
+:root {
+  background-color: #f9fafb; /* gray-50 */
+  color: #111827; /* gray-900 */
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #9ca3af; /* gray-400 */
+  border-radius: 9999px;
+}

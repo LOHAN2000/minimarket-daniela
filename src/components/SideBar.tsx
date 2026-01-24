@@ -1,5 +1,5 @@
 "use client"
-import { useGlobalState } from '@/store/intex'
+import { useGlobalState } from '@/store'
 import { LayoutDashboard, Menu, Package, ShoppingCart } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -23,7 +23,7 @@ export const SideBar = () => {
             </Link>
           )
         }
-        <button className='hover:bg-gray-100  rounded-full' onClick={() => setIsSideBarCollapsed(!isSideBarCollapsed)}>
+        <button className='hover:bg-gray-100 rounded-full' onClick={() => setIsSideBarCollapsed(!isSideBarCollapsed)}>
           <Menu size={isSideBarCollapsed ? 20 : 25}/>
         </button>
         

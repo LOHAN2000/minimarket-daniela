@@ -7,5 +7,5 @@ interface GlobalState {
 
 export const useGlobalState = create<GlobalState>((set) => ({
   isSideBarCollapsed: false,
-  setIsSideBarCollapsed: (collapsed: boolean) => set({ isSideBarCollapsed: collapsed})
+  setIsSideBarCollapsed: (collapsed: boolean) => set({ isSideBarCollapsed: collapsed}),
 }))
