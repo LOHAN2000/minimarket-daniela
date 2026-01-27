@@ -2,7 +2,8 @@
 import { OrderSumary } from '@/components/pos/OrderSumary';
 import { POSHeader } from '@/components/pos/POSHeader'
 import { ProductGrid } from '@/components/pos/ProductGrid'
-import React from 'react'
+import { useCartStore } from '@/store/useCartStore'
+import React, { useMemo } from 'react'
 
 const products = [
   { id: 1, name: "Limpiador Multiuso", sku: "GR069", price: 15.50, stock: 51, category: "Limpieza", color: "bg-blue-50" },
@@ -37,12 +38,22 @@ const products = [
 ];
 
 export default function POSPage() {
+
+  const { cart, addToCart, updateQty, removeItem, clearCart } = useCartStore();
+
+  const total = useMemo(() => {
+    return cart.reduce((acc, item) => acc + item.price * item.qty, 0);
+  }, [cart]);
+
+  const igv = total * 0.0; // Según tu lógica actual es 0
+  const subtotal = total - igv;
+  
   return (
     <div className='flex flex-col h-full gap-5 w-full overflow-hidden'>
       <POSHeader/>
       <div className='flex h-full overflow-hidden'>
-        <ProductGrid products={products} onAddCart={() => {}}/>
-        <OrderSumary cart={products} subtotal={0} igv={0} total={0} OnRemoveItem={() => {}} onUpdateQty={() => {}}/>
+        <ProductGrid products={products} onAddCart={addToCart}/>
+        <OrderSumary cart={cart} subtotal={subtotal} igv={igv} total={total} OnRemoveItem={removeItem} onUpdateQty={updateQty} onClearCart={clearCart}/>
       </div>
     </div>
   )

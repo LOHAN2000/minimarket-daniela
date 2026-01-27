@@ -1,5 +1,16 @@
+import { useCartStore } from '@/store/useCartStore';
 import { Calculator, Minus, Plus, ShoppingCart, Trash, Trash2 } from 'lucide-react';
-import React from 'react'
+import React, { useState } from 'react'
+
+interface Product {
+  id: number;
+  name: string;
+  sku: string;
+  price: number;
+  stock: number;
+  category: string;
+  color?: string;
+}
 
 interface OrderSumaryProps {
   cart: any[];
@@ -8,9 +19,19 @@ interface OrderSumaryProps {
   total: number;
   OnRemoveItem: (id: number) => void;
   onUpdateQty: (id: number, delta: number) => void;
+  onClearCart: () => void;
 }
 
-export const OrderSumary = ({cart, subtotal, igv, total, OnRemoveItem, onUpdateQty}: OrderSumaryProps) => {
+export const OrderSumary = ({cart, subtotal, igv, total, OnRemoveItem, onUpdateQty, onClearCart}: OrderSumaryProps) => {
+
+  const [montoEntregado, setMontoEntregado] = useState<number>(0);
+  const {getTotal, getIGV, getSubtotal} = useCartStore();
+
+  const handleMontoRapido = (monto: number) => {
+    setMontoEntregado(monto);
+  }
+
+  const cambio = montoEntregado - total;
   return (
     <div className='w-[35%] bg-white border-l border-gray-200 flex flex-col shadow-xl z-40'>
         <div className='flex p-4 border-b border-gray-100 bg-white'>
@@ -19,7 +40,7 @@ export const OrderSumary = ({cart, subtotal, igv, total, OnRemoveItem, onUpdateQ
               <h2 className='font-bold text-2xl text-gray-800 flex items-center gap-4'><ShoppingCart size={32} className='text-red-500'/>Venta Actual</h2>
               <span className="bg-gray-100 text-gray-600 text-xs font-bold px-2 py-0.5 rounded-full">{cart?.length} items</span>
             </div>
-            <button className='text text-red-600 text-sm font-semibold hover:bg-gray-200 px-2 py-1 rounded transition-colors flex items-center gap-1 ms-auto'><Trash size={19}/>Limpiar</button>
+            <button onClick={() => onClearCart()} className='text text-red-600 text-sm font-semibold hover:bg-gray-200 px-2 py-1 rounded transition-colors flex items-center gap-1 ms-auto'><Trash size={19}/>Limpiar</button>
           </div>
         </div>
 
@@ -66,20 +87,26 @@ export const OrderSumary = ({cart, subtotal, igv, total, OnRemoveItem, onUpdateQ
               <span>Total</span>
               <span>S/{total.toFixed(2)}</span>
             </div>
+            {montoEntregado > 0 && (
+              <div className='flex justify-between text-xl font-bold text-green-600 mt-2 pt-2 border-t border-dashed border-gray-300'>
+                <span>Cambio</span>
+                <span>S/{cambio.toFixed(2)}</span>
+              </div>
+            )}
           </div>
         </div>
         <div className='relative mx-3'>
-          <input type='number' placeholder='Monto entregado...' className='w-full bg-gray-50 border border-gray-300 rounded-xl py-3 pl-4 pr-10 font-bold text-lg text-gray-900 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100 transition-all placeholder:font-normal placeholder:text-gray-400'/>
-          <Calculator className='absolute right-2 top-3 text-gray-400' size={30}/>
+          <input type='number' value={montoEntregado || ''} onChange={(e) => setMontoEntregado(parseFloat(e.target.value) || 0)} placeholder='Monto entregado...' className='w-full bg-gray-50 border border-gray-300 rounded-xl py-3 pl-4 pr-10 font-bold text-lg text-gray-900 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100 transition-all placeholder:font-normal placeholder:text-gray-400'/>
+          <Calculator className='absolute right-1 top-3 text-gray-400' size={30}/>
         </div>
         <div className="flex gap-2 mt-3 px-2">
             {[10, 20, 50, 100, 200].map(monto => (
-                <button key={monto} className="flex-1 bg-gray-100 hover:bg-gray-200 text-xs font-bold text-gray-600 py-1.5 rounded-lg transition-colors">
+                <button onClick={() => handleMontoRapido(monto)} key={monto} className="flex-1 cursor-pointer bg-gray-100 hover:bg-gray-200 text-xs font-bold text-gray-600 py-1.5 rounded-lg transition-colors">
                     S/ {monto}
                 </button>
             ))}
         </div>
-        <button className='w-full mt-3 bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-red-200 active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-lg uppercase tracking-wide'>
+        <button className='w-full mt-3 bg-red-500 cursor-pointer hover:bg-red-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-red-200 active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-lg uppercase tracking-wide'>
             <span>Cobrar S/{total.toFixed(2)}</span>
         </button>
     </div>
