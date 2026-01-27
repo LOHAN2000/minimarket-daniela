@@ -10,14 +10,14 @@ export const DashBoardWrapper = ({ children }: { children: React.ReactNode }) =>
   const { isSideBarCollapsed } = useGlobalState();
 
   return (
-      <div className="flex min-h-screen w-full bg-gray-50 text-gray-900 transition-colors duration-300">      
+      <div className="flex h-full overflow-hidden w-full bg-gray-50 text-gray-900 transition-colors duration-300">      
         
         <SideBar/>
 
-      <main className={`flex flex-col w-full h-ful py-7 px-9 bg-gray-50 transition-all duration-300 ${isSideBarCollapsed ? "ml-15" : "ml-60"}`}>
-        <Navbar/>
-        {children}
-      </main>
+        <main className={`flex flex-col w-full h-full overflow-hidden py-7 px-9 bg-gray-50 transition-all duration-300 ${isSideBarCollapsed ? "ml-15" : "ml-60"}`}>
+          <Navbar/>
+          {children}
+        </main>
 
     </div>
   )

@@ -1,6 +1,6 @@
 "use client"
 import { useGlobalState } from '@/store'
-import { LayoutDashboard, Menu, Package, ShoppingCart } from 'lucide-react'
+import { DollarSign, LayoutDashboard, Menu, Package, ShoppingCart } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import React from 'react'
@@ -34,16 +34,22 @@ export const SideBar = () => {
           <LayoutDashboard size={20} />
           {!isSideBarCollapsed && <span className="font-medium">Dashboard</span>}
         </Link>
+        
+        <Link href="/pos" className={`flex items-center rounded-lg py-3 text-gray-500 hover:bg-gray-100 transition-all duration-300 ${isSideBarCollapsed ? "gap-0 justify-center px-2" : "gap-3 px-4"}`}>
+          <DollarSign size={20} />
+          {!isSideBarCollapsed && <span className="font-medium">Venta</span>}
+        </Link>
 
         <Link href="/inventory" className={`flex items-center rounded-lg py-3 text-gray-500 hover:bg-gray-100 transition-all duration-300 ${isSideBarCollapsed ? "gap-0 justify-center px-2" : "gap-3 px-4"}`}>
           <Package size={20} />
           {!isSideBarCollapsed && <span className="font-medium">Inventario</span>}
         </Link>
 
-         <Link href="/products" className={`flex items-center rounded-lg py-3 text-gray-500 hover:bg-gray-100 transition-all duration-300 ${isSideBarCollapsed ? "gap-0 justify-center px-2" : "gap-3 px-4"}`}>
+        <Link href="/products" className={`flex items-center rounded-lg py-3 text-gray-500 hover:bg-gray-100 transition-all duration-300 ${isSideBarCollapsed ? "gap-0 justify-center px-2" : "gap-3 px-4"}`}>
           <ShoppingCart size={20} />
           {!isSideBarCollapsed && <span className="font-medium">Productos</span>}
         </Link>
+
       </nav>
 
       {/* 3. Footer del menú */}
