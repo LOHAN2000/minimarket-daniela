@@ -1,5 +1,5 @@
 import { useCartStore } from '@/store/useCartStore';
-import { Calculator, Minus, Plus, ShoppingCart, Trash, Trash2 } from 'lucide-react';
+import { Banknote, Calculator, Minus, Plus, ShoppingCart, Trash, Trash2 } from 'lucide-react';
 import React, { useState } from 'react'
 
 interface Product {
@@ -20,18 +20,27 @@ interface OrderSumaryProps {
   OnRemoveItem: (id: number) => void;
   onUpdateQty: (id: number, delta: number) => void;
   onClearCart: () => void;
+  onProcessSale: () => void;
 }
 
-export const OrderSumary = ({cart, subtotal, igv, total, OnRemoveItem, onUpdateQty, onClearCart}: OrderSumaryProps) => {
+export const OrderSumary = ({cart, subtotal, igv, total, OnRemoveItem, onUpdateQty, onClearCart, onProcessSale}: OrderSumaryProps) => {
 
   const [montoEntregado, setMontoEntregado] = useState<number>(0);
-  const {getTotal, getIGV, getSubtotal} = useCartStore();
+  const cambio = montoEntregado - total;
+  const isSufficient = montoEntregado >= total;
+  const hasItems = cart?.length > 0; 
 
   const handleMontoRapido = (monto: number) => {
     setMontoEntregado(monto);
   }
 
-  const cambio = montoEntregado - total;
+  const handleCobrar = () => {
+    if(isSufficient && hasItems) {
+      onProcessSale();
+      setMontoEntregado(0);
+    }
+  }
+
   return (
     <div className='w-[35%] bg-white border-l border-gray-200 flex flex-col shadow-xl z-40'>
         <div className='flex p-4 border-b border-gray-100 bg-white'>
@@ -88,9 +97,9 @@ export const OrderSumary = ({cart, subtotal, igv, total, OnRemoveItem, onUpdateQ
               <span>S/{total.toFixed(2)}</span>
             </div>
             {montoEntregado > 0 && (
-              <div className='flex justify-between text-xl font-bold text-green-600 mt-2 pt-2 border-t border-dashed border-gray-300'>
-                <span>Cambio</span>
-                <span>S/{cambio.toFixed(2)}</span>
+              <div className={`flex justify-between text-xl font-bold mt-2 pt-2 border-t border-dashed border-gray-300 ${isSufficient ? 'text-green-600' : 'text-red-600'}`}>
+                <span>{isSufficient ? 'Cambio' : 'Falta'}</span>
+                <span>S/{Math.abs(cambio).toFixed(2)}</span>
               </div>
             )}
           </div>
@@ -106,7 +115,8 @@ export const OrderSumary = ({cart, subtotal, igv, total, OnRemoveItem, onUpdateQ
                 </button>
             ))}
         </div>
-        <button className='w-full mt-3 bg-red-500 cursor-pointer hover:bg-red-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-red-200 active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-lg uppercase tracking-wide'>
+        <button onClick={handleCobrar} disabled={!isSufficient || !hasItems} className={`w-full mt-3 font-bold py-4 rounded-xl shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-lg uppercase tracking-wide ${isSufficient && hasItems ? "bg-red-500 hover:bg-red-600 text-white shadow-red-200 cursor-pointer" : "bg-gray-200 text-gray-400 cursor-not-allowed shadow-none"}`}>
+            <Banknote size={24}/>
             <span>Cobrar S/{total.toFixed(2)}</span>
         </button>
     </div>

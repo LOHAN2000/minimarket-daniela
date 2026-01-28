@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { Product } from "./useProductStore";
 
 interface CartItem {
   id: number;
@@ -13,7 +14,7 @@ interface CartItem {
 
 interface CartState {
   cart: CartItem[];
-  addToCart: (product: any) => void;
+  addToCart: (product: Product) => void;
   updateQty: (id: number, delta: number) => void;
   removeItem: (id: number) => void;
   clearCart: () => void;
