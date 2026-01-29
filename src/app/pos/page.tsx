@@ -3,7 +3,8 @@ import { OrderSumary } from '@/components/pos/OrderSumary';
 import { POSHeader } from '@/components/pos/POSHeader'
 import { ProductGrid } from '@/components/pos/ProductGrid'
 import { useCartStore } from '@/store/useCartStore'
-import { useProductStore } from '@/store/useProductStore';
+import { useProductStore } from "@/store/useProductStore";
+import { useRouter } from "next/navigation";
 import React, { useMemo, useState } from 'react'
 import { toast, Toaster } from 'sonner';
 
@@ -13,6 +14,7 @@ export default function POSPage() {
   const { products, getProductByCode } = useProductStore();
   const [selectedCategory, setSelectedCategory] = useState("Todos");
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const router = useRouter()
 
   const [searchTerm, setSearchTerm] = useState("");
   const total = useMemo(() => {
@@ -33,20 +35,33 @@ export default function POSPage() {
     }
   }
 
-  const filteredProducts = products.filter((product) => {
-    const matchCategory = selectedCategory === "Todos" || product.category === selectedCategory;
-    const lowerTerm = searchTerm.toLowerCase();
-    const matchSearch = product.name.toLowerCase().includes(lowerTerm) || product.sku.toLowerCase().includes(lowerTerm);
-    return matchCategory && matchSearch;
-  });
+  const filteredProducts = useMemo(() => {
+    return products.filter((product) => {
+      const matchCategory = selectedCategory === "Todos" || product.category === selectedCategory;
+      const lowerTerm = searchTerm.toLowerCase();
+      const matchSearch = product.name.toLowerCase().includes(lowerTerm) || product.sku.toLowerCase().includes(lowerTerm);
+      return matchCategory && matchSearch;
+    });
+  }, [products, selectedCategory, searchTerm]);
 
   const handleProcessSale = () => {
     toast.success("Venta procesada con éxito");
     clearCart(); 
+
+    const randomId = Math.floor(Math.random() * 9000) + 1000;
+    const ticketId = `TICKET-${randomId}`;
+
+    // 3. REDIRECCIONAR A LA RUTA DINÁMICA
+    // Pasamos el ID en la URL. Next.js lo capturará en [ticketId]
+    setTimeout(() => {
+        router.push(`/pos/ticket/${ticketId}`);
+        clearCart(); // Limpiamos el carrito antes de irnos
+    }, 500); // Un pequeño delay para que se vea la alerta
+    
 }
 
   return (
-    <div className='flex flex-col h-full gap-5 w-full overflow-hidden'>
+    <div className='flex flex-col h-full gap-3 w-full overflow-hidden'>
       <Toaster position='bottom-left' richColors />
       <POSHeader onScan={handleScan} onSearchChange={setSearchTerm} onFilterClick={() => setIsFiltersOpen(!isFiltersOpen)}/>
       <div className={`transition-all duration-300 ease-in-out ${isFiltersOpen ? "max-h-20 opacity-100 mb-1" : "max-h-0 opacity-0 mb-0"}`}>

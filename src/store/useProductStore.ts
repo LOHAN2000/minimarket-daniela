@@ -45,6 +45,7 @@ const initialProducts: Product[] = [
   { id: 26, name: "Ketchup Heinz", sku: "GR051", price: 5.90, stock: 65, category: "Condimentos", color: "bg-red-100" },
   { id: 27, name: "Mostaza Francesa", sku: "GR052", price: 4.50, stock: 38, category: "Condimentos", color: "bg-yellow-100" },
   { id: 28, name: "Salsa Ají Mágico", sku: "GR053", price: 3.20, stock: 92, category: "Condimentos", color: "bg-red-100" },
+  { id: 29, name: "Producto 1", sku: "749699122210", price: 3.20, stock: 92, category: "Condimentos", color: "bg-red-100" },
 ];
 
 export const useProductStore = create<ProductState>((set, get) => ({
