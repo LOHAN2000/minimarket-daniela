@@ -10,10 +10,11 @@ interface Product {
   stock: number;
   category: string;
   color?: string;
+  qty: number;
 }
 
 interface OrderSumaryProps {
-  cart: any[];
+  cart: Product[];
   subtotal: number;
   igv: number;
   total: number;
@@ -24,6 +25,8 @@ interface OrderSumaryProps {
 }
 
 export const OrderSumary = ({cart, subtotal, igv, total, OnRemoveItem, onUpdateQty, onClearCart, onProcessSale}: OrderSumaryProps) => {
+
+  console.log(cart)
 
   const [montoEntregado, setMontoEntregado] = useState<number>(0);
   const cambio = montoEntregado - total;

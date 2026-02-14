@@ -34,7 +34,19 @@ export const useCartStore = create<CartState>((set) => ({
         };
       } else {
         return {
-          cart: [...state.cart, { ...product, qty: 1 }],
+          cart: [
+            ...state.cart,
+            {
+              id: product.id,
+              name: product.name,
+              sku: product.barcode,
+              price: product.price,
+              stock: product.stock,
+              category: product.category?.name || "General",
+              color: product.color,
+              qty: 1,
+            },
+          ],
         };
       }
     });
