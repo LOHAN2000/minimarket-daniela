@@ -183,7 +183,7 @@ export default function RegisterMarketAdmin() {
       {/* -----------------------------------------------------------------------
           DERECHA: DASHBOARD VISUAL
           ----------------------------------------------------------------------- */}
-      <div className="hidden lg:block lg:w-1/2 relative bg-slate-900 overflow-hidden">
+        <div className="hidden lg:block lg:w-1/2 relative bg-slate-900 overflow-hidden">
         
         {/* Imágenes */}
         {backgroundImages.map((img, index) => (

@@ -10,7 +10,9 @@ export default function Login() {
 
   const backgroundImages = [
     '/login/verduras.jpg',
-    '/login/pasillo.jpg'
+    '/login/pasillo.jpg',
+    '/login/seccion-congelados.jpg',
+    '/login/cafe.jpg'
   ]
 
   useEffect(() => {
@@ -20,7 +22,7 @@ export default function Login() {
     return () => {
       clearInterval(timer)
     }
-  }, )
+  }, [])
 
 
   return (
@@ -110,7 +112,6 @@ export default function Login() {
             </div>
           </form>
         </div>
-
         <div className='flex w-full justify-between'>
           <span className='text-sm text-slate-400'>© 2026 Minimarket Daniela.</span>
           <div className='flex items-center gap-2'>
@@ -121,13 +122,37 @@ export default function Login() {
       </div>
 
       <div className='hidden lg:block lg:w-1/2 relative bg-slate-900 overflow-hidden'>
-      {backgroundImages.map((img, index) => (
-        <div key={index} className={'absolute inset-0 transition-opacity duration-1000 ease-in-out ' + (currentImage === index ? 'opacity-100' : 'opacity-0')}>
-          <Image src={img} alt='Minimarket Daniela' fill className='object-cover transform scale-105'/>
-        </div>
-      ))}
+        {backgroundImages.map((img, index) => (
+          <div key={index} className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${currentImage === index ? 'opacity-100' : 'opacity-0'}`}>
+            <Image
+              src={img}
+              alt='Minimarket Daniela'
+              fill
+              className={`object-cover transition-transform duration-[7000ms] ease-in-out ${currentImage === index ? 'scale-110' : 'scale-105'}`}/>
+          </div>
+        ))}
+        <div className='absolute inset-0 bg-red-500/10 mix-blend-multiply z-10'></div>
+        <div className='absolute inset-0 bg-linear-to-t from-slate-950 via-slate-900/40 to-transparent z-10'></div>
 
+        <div className='absolute inset-0 flex flex-col justify-end items-start z-40 ms-24 space-y-20 mb-6'>
+          <div className='space-y-3 max-w-2xl'>
+            <div className='bg-red-500 w-fit text-white text-xs px-3 py-1 rounded-full tracking-wider mb-2 uppercase font-bold'>
+              <span>INTERNAL USE ONLY</span>
+            </div>
+            <div className='flex flex-col text-6xl font-bold'>
+              <span className='text-white'>Gestión Integral</span>
+              <span className='text-red-400'>De Inventario.</span>
+            </div>
+            <span className='text-slate-400 leading-relaxed font-light opacity-90 text-lg'>Plataforma optimizada para el control de flujo de caja, rotación de productos y punto de venta.</span>
+          </div>
+          <div className='flex gap-2'>
+            {backgroundImages.map((img, index) => (
+              <button key={index} onClick={() => setCurrentImage(index)} className={`h-1.5 cursor-pointer rounded-full transition-all duration-300 ${currentImage === index ? 'w-8 bg-red-400' : 'w-2 bg-white/30'}`}></button>
+            ))}
+          </div>
+        </div>
       </div>
+
       
     </div>
   )
