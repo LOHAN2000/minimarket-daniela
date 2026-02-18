@@ -1,255 +1,199 @@
 "use client"
-import React, { useState, useEffect } from 'react';
-import { Eye, EyeOff, ArrowRight, Mail, User, Lock, ShoppingBasket, ShieldCheck, BadgeCheck, Fingerprint, Store } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Eye, EyeOff, Loader2, Lock, Mail, ShoppingBasket, Store } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { Toaster } from 'sonner'
+import { useAuthStore } from '@/store/useAuthStore' // Asegúrate que la ruta sea correcta
+import { useRouter } from 'next/navigation'
 
-export default function RegisterMarketAdmin() {
+export default function Login() {
+  const { isLoading, loginUser } = useAuthStore();
+  const router = useRouter();
+
   const [showPassword, setShowPassword] = useState(false);
   const [currentImage, setCurrentImage] = useState(0);
 
-  // Imágenes rotativas
+  // Imágenes de fondo (Full Screen)
   const backgroundImages = [
-    "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1974&auto=format&fit=crop", 
-    "https://images.unsplash.com/photo-1578916171728-46686eac8d58?q=80&w=1974&auto=format&fit=crop", // Supermarket Aisle
-    "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=2070&auto=format&fit=crop"
+    '/login/pasillo.jpg',
+    '/login/cafe.jpg', 
+    '/login/verduras.jpg',
   ];
 
+  const [credentials, setCredentials] = useState({
+    email: '',
+    password: '',
+  })
+
+  // Rotación de fondo
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % backgroundImages.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, []);
+      setCurrentImage((prev) => (prev + 1) % backgroundImages.length)
+    }, 6000)
+    return () => clearInterval(timer)
+  }, [backgroundImages.length])
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Login:", credentials);
+    // await loginUser(credentials);
+  }
 
   return (
-    <div className="min-h-screen w-full flex bg-white font-sans selection:bg-red-100 selection:text-red-900">
-      
-      {/* -----------------------------------------------------------------------
-          IZQUIERDA: FORMULARIO (Inputs ajustados al JSON)
-          ----------------------------------------------------------------------- */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 md:p-12 lg:p-14 relative z-20 bg-white">
-        
-        {/* Fondo decorativo sutil (Grid Pattern) */}
-        <div className="absolute inset-0 z-0 opacity-[0.03]" 
-             style={{ backgroundImage: 'radial-gradient(#cc0000 1px, transparent 1px)', backgroundSize: '20px 20px' }}>
-        </div>
+    <div className="relative w-full h-screen flex items-center justify-center overflow-hidden bg-slate-900">
+      <Toaster />
 
-        {/* Header */}
-        <nav className="flex items-center justify-between relative z-10">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-red-600 rounded-lg shadow-lg shadow-red-600/20 flex items-center justify-center text-white">
-              <ShoppingBasket className="w-6 h-6" />
-            </div>
-            <span className="font-bold text-2xl text-slate-900 tracking-tight flex items-center gap-1">
-              Fresko<span className="text-red-600">Admin</span>
-            </span>
-          </div>
-          <div className="hidden sm:flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest border border-slate-200 px-3 py-1 rounded-full">
-            <Store className="w-3 h-3" /> Punto de Venta
-          </div>
-        </nav>
-
-        {/* Main Content */}
-        <main className="w-full max-w-lg mx-auto mt-8 relative z-10">
-          <div className="mb-6">
-            <h1 className="text-3xl font-extrabold text-slate-900 mb-2 tracking-tight">
-              Alta de Personal
-            </h1>
-            <p className="text-slate-500 text-sm">
-              Complete los datos del colaborador para generar sus credenciales de acceso al terminal POS.
-            </p>
-          </div>
-
-          <form className="space-y-4">
-            
-            {/* ROW 1: Name & LastName */}
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="w-full group">
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5 ml-1">Nombre</label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-red-600 transition-colors" />
-                  <input 
-                    name="name"
-                    type="text" 
-                    placeholder="Ej. Roberto" 
-                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-lg focus:ring-2 focus:ring-red-100 focus:border-red-500 block pl-10 p-3 transition-all outline-none font-medium placeholder:text-slate-400"
-                  />
-                </div>
-              </div>
-              <div className="w-full group">
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5 ml-1">Apellidos</label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-red-600 transition-colors" />
-                  <input 
-                    name="lastName"
-                    type="text" 
-                    placeholder="Ej. Gomez Diaz" 
-                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-lg focus:ring-2 focus:ring-red-100 focus:border-red-500 block pl-10 p-3 transition-all outline-none font-medium placeholder:text-slate-400"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* ROW 2: Username */}
-            <div className="group">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5 ml-1">Usuario de Sistema</label>
-              <div className="relative">
-                <Fingerprint className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-red-600 transition-colors" />
-                <input 
-                  name="username"
-                  type="text" 
-                  placeholder="Ej. rgomez_caja1" 
-                  className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-lg focus:ring-2 focus:ring-red-100 focus:border-red-500 block pl-10 p-3 transition-all outline-none font-medium placeholder:text-slate-400"
-                />
-              </div>
-            </div>
-
-            {/* ROW 3: Email */}
-            <div className="group">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5 ml-1">Correo Electrónico</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-red-600 transition-colors" />
-                <input 
-                  name="email"
-                  type="email" 
-                  placeholder="roberto@freskomarket.com" 
-                  className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-lg focus:ring-2 focus:ring-red-100 focus:border-red-500 block pl-10 p-3 transition-all outline-none font-medium placeholder:text-slate-400"
-                />
-              </div>
-            </div>
-
-            {/* ROW 4: Password */}
-            <div className="group">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5 ml-1">Contraseña</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-red-600 transition-colors" />
-                <input 
-                  name="password"
-                  type={showPassword ? "text" : "password"} 
-                  placeholder="••••••••••••"
-                  className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-lg focus:ring-2 focus:ring-red-100 focus:border-red-500 block pl-10 p-3 pr-10 transition-all outline-none font-medium placeholder:text-slate-400"
-                />
-                <button 
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-600 transition-colors"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-
-            {/* ROW 5: Role (Locked) */}
-            <div className="group">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5 ml-1">Rol Asignado</label>
-              <div className="relative opacity-70">
-                <ShieldCheck className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-red-600" />
-                <input 
-                  name="role"
-                  type="text" 
-                  value="CAJERO - PUNTO DE VENTA" 
-                  readOnly
-                  className="w-full bg-red-50 border border-red-100 text-red-800 text-sm font-bold rounded-lg block pl-10 p-3 cursor-not-allowed select-none focus:outline-none"
-                />
-                <BadgeCheck className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-red-600" />
-              </div>
-              <p className="text-[10px] text-slate-400 mt-1 ml-1">
-                * El registro externo está limitado exclusivamente al perfil de cajeros.
-              </p>
-            </div>
-
-            {/* Button */}
-            <button type="button" className="w-full mt-4 group bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 px-6 rounded-lg shadow-lg shadow-red-600/30 hover:shadow-red-600/40 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 text-base">
-              Registrar Cajero
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </button>
-
-            <div className="text-center pt-2">
-               <p className="text-slate-500 text-xs">
-                 ¿Problemas con el registro? <a href="#" className="text-red-600 font-bold hover:underline">Contactar Soporte IT</a>
-               </p>
-            </div>
-          </form>
-        </main>
-
-        <footer className="mt-8 relative z-10 text-slate-400 text-[10px] flex justify-between items-center border-t border-slate-100 pt-4">
-          <p>© 2024 Fresko Market Inc.</p>
-          <div className="flex items-center gap-2">
-             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-             <span>System Online</span>
-          </div>
-        </footer>
-      </div>
-
-      {/* -----------------------------------------------------------------------
-          DERECHA: DASHBOARD VISUAL
-          ----------------------------------------------------------------------- */}
-        <div className="hidden lg:block lg:w-1/2 relative bg-slate-900 overflow-hidden">
-        
-        {/* Imágenes */}
+      {/* ----------------------------------------------------------------------
+          FONDO INMERSIVO (Cubre toda la pantalla)
+          ---------------------------------------------------------------------- */}
+      <div className="absolute inset-0 z-0">
         {backgroundImages.map((img, index) => (
-          <div 
+          <div
             key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+            className={`absolute inset-0 transition-opacity duration-[1500ms] ease-in-out ${
               currentImage === index ? 'opacity-100' : 'opacity-0'
             }`}
           >
-            <img 
-              src={img} 
-              alt="Market Admin" 
-              className="w-full h-full object-cover transform scale-105" 
+            <Image
+              src={img}
+              alt="Background"
+              fill
+              className="object-cover scale-105" // Ligero zoom para evitar bordes
+              priority={index === 0}
             />
           </div>
         ))}
+        {/* Overlay Oscuro para que la tarjeta resalte */}
+        <div className="absolute inset-0 bg-slate-900/60 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-black/40" />
+      </div>
 
-        {/* Gradientes Fresko Brand */}
-        {/* Capa Roja oscura multiplicar para dar identidad de marca sobre la foto */}
-        <div className="absolute inset-0 bg-red-900/40 mix-blend-multiply z-10"></div>
-        {/* Degradado oscuro desde abajo para texto legible */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-transparent z-10"></div>
+      {/* ----------------------------------------------------------------------
+          TARJETA CENTRAL (Floating Card)
+          ---------------------------------------------------------------------- */}
+      <div className="relative z-10 w-full max-w-[450px] p-6 sm:p-10 mx-4">
+        
+        {/* Efecto Glassmorphism / Tarjeta Blanca */}
+        <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 overflow-hidden relative">
+          
+          {/* Decoración superior (Barra Roja) */}
+          <div className="h-2 w-full bg-gradient-to-r from-red-600 via-red-500 to-red-400"></div>
 
-        {/* Elemento Decorativo: Tarjeta Glassmorphism */}
-        <div className="absolute top-10 right-10 z-20">
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-xl flex items-center gap-4 shadow-2xl">
-                <div className="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center text-white font-bold text-xs">FM</div>
-                <div>
-                    <p className="text-white text-xs font-bold">Admin Console</p>
-                    <p className="text-red-200 text-[10px]">Secure Connection</p>
+          <div className="p-8 pt-10">
+            {/* Header: Logo y Título */}
+            <div className="flex flex-col items-center text-center mb-8 space-y-4">
+              <div className="p-3 bg-red-50 rounded-2xl shadow-inner inline-flex">
+                <ShoppingBasket className="w-8 h-8 text-red-600" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
+                  Minimarket <span className="text-red-600">Daniela</span>
+                </h2>
+                <div className="flex items-center justify-center gap-2 mt-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                  <Store className="w-3 h-3" /> Acceso Administrativo
                 </div>
+              </div>
             </div>
+
+            {/* Formulario */}
+            <form onSubmit={onSubmit} className="space-y-5">
+              
+              {/* Email */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase ml-1">Correo o Usuario</label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail className="h-5 w-5 text-slate-400 group-focus-within:text-red-500 transition-colors" />
+                  </div>
+                  <input
+                    type="email"
+                    name="email"
+                    value={credentials.email}
+                    onChange={(e) => setCredentials({ ...credentials, [e.target.name]: e.target.value })}
+                    className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl leading-5 bg-slate-50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 focus:bg-white transition-all duration-200 sm:text-sm font-medium"
+                    placeholder="admin@daniela.com"
+                  />
+                </div>
+              </div>
+
+              {/* Password */}
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center ml-1">
+                  <label className="text-xs font-bold text-slate-500 uppercase">Contraseña</label>
+                </div>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock className="h-5 w-5 text-slate-400 group-focus-within:text-red-500 transition-colors" />
+                  </div>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    value={credentials.password}
+                    onChange={(e) => setCredentials({ ...credentials, [e.target.name]: e.target.value })}
+                    className="block w-full pl-10 pr-10 py-3 border border-slate-200 rounded-xl leading-5 bg-slate-50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 focus:bg-white transition-all duration-200 sm:text-sm font-medium"
+                    placeholder="••••••••"
+                  />
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-slate-400 hover:text-red-500 focus:outline-none transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Opciones Extras */}
+              <div className="flex items-center justify-between text-sm">
+                <label className="flex items-center gap-2 cursor-pointer group">
+                   <div className="relative flex items-center">
+                     <input type="checkbox" className="peer appearance-none w-4 h-4 border border-slate-300 rounded checked:bg-red-500 checked:border-red-500 transition-colors" />
+                     <CheckCircle2 className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 left-0.5 pointer-events-none transition-opacity"/>
+                   </div>
+                   <span className="text-slate-500 group-hover:text-slate-700 font-medium select-none">Recordarme</span>
+                </label>
+                <Link href="/forgot-password" className="text-red-600 font-bold hover:text-red-700 hover:underline transition-colors">
+                  ¿Olvidaste la clave?
+                </Link>
+              </div>
+
+              {/* Botón Principal */}
+              <button
+                type="submit"
+                className="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-xl shadow-lg shadow-red-500/30 text-sm font-bold text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all transform hover:-translate-y-0.5 active:scale-95"
+              >
+                {isLoading ? (
+                  <Loader2 className="animate-spin h-5 w-5 text-white" />
+                ) : (
+                  <>
+                    Ingresar al Sistema <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
+              </button>
+            </form>
+
+            {/* Footer de la tarjeta */}
+            <div className="mt-8 pt-6 border-t border-slate-100 text-center">
+              <p className="text-sm text-slate-500">
+                ¿No tienes credenciales?{' '}
+                <Link href="/register" className="font-bold text-slate-900 hover:text-red-600 transition-colors">
+                  Registrar Personal
+                </Link>
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* Contenido Texto */}
-        <div className="absolute inset-0 flex flex-col justify-end p-20 z-20 pb-24">
-           <div className="space-y-4 max-w-lg">
-             <div className="inline-block bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded-full tracking-wider mb-2">
-                INTERNAL USE ONLY
-             </div>
-             
-             <h2 className="text-5xl font-bold text-white leading-none tracking-tight">
-               Gestión Integral <br/>
-               <span className="text-red-400">de Inventario.</span>
-             </h2>
-             
-             <p className="text-slate-200 text-lg opacity-90 leading-relaxed font-light">
-               Plataforma optimizada para el control de flujo de caja, rotación de productos frescos y administración de personal.
-             </p>
-           </div>
-        </div>
-
-        {/* Indicadores */}
-        <div className="absolute bottom-10 left-20 z-30 flex gap-2">
-          {backgroundImages.map((_, index) => (
-            <button 
-              key={index}
-              onClick={() => setCurrentImage(index)}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                currentImage === index ? 'w-8 bg-red-500' : 'w-2 bg-white/30'
-              }`}
-            />
-          ))}
+        {/* Info del Sistema (Fuera de la tarjeta) */}
+        <div className="text-center mt-8 text-white/40 text-xs font-mono">
+          <p>Secure Connection • TLS 1.3 • v2.4.0</p>
+          <p className="mt-1">© 2026 Minimarket Daniela POS</p>
         </div>
 
       </div>
     </div>
-  );
+  )
 }
