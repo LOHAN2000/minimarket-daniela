@@ -28,12 +28,13 @@ export const useAuthStore = create<AuthState>()( persist((set) => ({
     try {
       const { data } = await api.post('/auth/login', { username, password });
       const decodedUser = jwtDecode<User>(data.token);
-      
       set({ token: data.token, user: decodedUser, isAuthenticated: true, isLoading: false });
-    } catch (error: unknown) {
-      console.log("Login falló", error);
-      set({ isLoading: false, error: "Credenciales incorrectas o error de conexión." });
-      throw error;
+      toast.success("Inicio de sesión exitoso");
+    } catch (error: any) {
+      set({  isLoading: false})
+      const errorMessage = error.response?.data?.error || error.response?.data?.message || "Error de conexión con el servidor";
+      set({ error: errorMessage });
+      toast.error(errorMessage);
     }
   },
   registerUser: async (newUser) => {
