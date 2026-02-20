@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { newUser, User } from "../../types";
 import { toast } from "sonner";
+import Cookies from "js-cookie";
 
 interface AuthState {
   token: string | null;
@@ -28,6 +29,9 @@ export const useAuthStore = create<AuthState>()( persist((set) => ({
     try {
       const { data } = await api.post('/auth/login', { username, password });
       const decodedUser = jwtDecode<User>(data.token);
+
+      Cookies.set('token', data.token, { expires: 1/3, secure: true, sameSite: 'strict' });
+
       set({ token: data.token, user: decodedUser, isAuthenticated: true, isLoading: false });
       toast.success("Inicio de sesión exitoso");
     } catch (error: any) {
@@ -52,7 +56,12 @@ export const useAuthStore = create<AuthState>()( persist((set) => ({
   },
 
   setAuth: (token, user) => set({ token, user, isAuthenticated: true}),
-  logout: () => set({ token: null, user: null, isAuthenticated: false})
+  logout: () => {
+    Cookies.remove('token');
+    set({ token: null, user: null, isAuthenticated: false})
+    window.location.href = '/login'
+  }
+    
 }),
   {
     name: "auth-storage",

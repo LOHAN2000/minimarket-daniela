@@ -3,6 +3,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { ArrowRight, Eye, EyeOff, Loader2, Lock, Mail, ShoppingBasket, Store } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { Toaster } from 'sonner';
 
@@ -12,6 +13,8 @@ export default function Login() {
   
   const [showPassword, setShowPassword] = useState(false);
   const [ currentImage, setCurrentImage ] = useState(0);
+
+  const router = useRouter();
 
   const [credentials, setCredentials] = useState({
       username: '',
@@ -30,6 +33,9 @@ export default function Login() {
   const onSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
       await login(credentials.username, credentials.password);
+
+      router.push('/pos')
+      
       setCredentials({username: '', password: ''});
   }
 
