@@ -8,8 +8,9 @@ export interface newUser {
 }
 
 export interface User {
-  sub: string;
   unique_name: string;
+  LastName: string;
+  UserName: string;
   role: string;
-  fullname?: string;
+  Email: string;
 }

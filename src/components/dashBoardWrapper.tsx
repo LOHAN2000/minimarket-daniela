@@ -23,7 +23,7 @@ export const DashBoardWrapper = ({ children }: { children: React.ReactNode }) =>
         
         <SideBar/>
 
-        <main className={`flex flex-col w-full h-full overflow-hidden py-7 px-9 bg-gray-50 transition-all duration-300 ${isSideBarCollapsed ? "ml-15" : "ml-60"}`}>
+        <main className={`flex flex-col w-full h-full overflow-hidden py-2 px-9 bg-gray-50 transition-all duration-300 ${isSideBarCollapsed ? "ml-15" : "ml-60"}`}>
             
             {/* Renderizado condicional limpio */}
             {isNavbarVisible && <Navbar/>}
