@@ -14,3 +14,24 @@ export interface User {
   role: string;
   Email: string;
 }
+
+// Productos 
+
+export interface Product {
+  id: number;
+  name: string;
+  barcode: string;
+  price: number;
+  costPrice: number;
+  stock: number;
+  category: Category;
+  supplierId: number;
+  supplier: string;
+  createdAt: Date;
+}
+
+export interface Category {
+  id: number;
+  name: string;
+  createdAt: Date;
+}
