@@ -28,6 +28,7 @@ export default function Inventory() {
 
   return (
     <div className='w-full h-full flex flex-col p-4 overflow-hidden bg-slate-50'>
+      
       <Header name='Inventario'/>
       
       {/* EL TRUCO: flex-wrap permite que si el sidebar empuja los elementos 

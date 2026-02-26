@@ -30,8 +30,37 @@ export interface Product {
   createdAt: Date;
 }
 
+export interface newProduct {
+  name: string;
+  barcode: string;
+  price: number;
+  costPrice: number;
+  stock: number;
+  categoryId: number;
+  supplierId: number;
+}
+
 export interface Category {
   id: number;
   name: string;
   createdAt: Date;
+}
+
+export interface newCategory {
+  name: string;
+}
+
+
+// Proveedores
+
+export interface SupplierApi {
+  razon_social: string;
+  numero_documento: number;
+  estado: string;
+  condicion: string;
+  direccion: string;
+  ubigeo: number;
+  distrito: string;
+  provincia: string;
+  departamento: string;
 }

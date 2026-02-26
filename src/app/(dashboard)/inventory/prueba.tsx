@@ -1,188 +1,157 @@
-"use client"
-import { Header } from '@/components/Header';
-import { useProductStore } from '@/store/useProductStore';
-import { 
-  PenLine, 
-  Search, 
-  Trash2, 
-  SlidersHorizontal, 
-  ListFilter, 
-  Plus, 
-  ChevronsLeft, 
-  ChevronLeft, 
-  ChevronRight, 
-  ChevronsRight 
-} from 'lucide-react';
-import React, { useEffect, useState } from 'react'
+import { useAuthStore } from '@/store/useAuthStore'
+import { X, Box, Truck } from 'lucide-react'
+import React from 'react'
 
-export default function Inventory() {
-  const { products, fetchProducts, isLoading } = useProductStore();
-  const [searchTerm, setSearchTerm] = useState("");
+export const AddProductModal = () => {
+  const { user } = useAuthStore();
 
-  useEffect(() => {
-    fetchProducts();
-  }, [])
-  
-  const filteredProducts = products.filter((producto) =>
-    producto.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  // Función para determinar el estilo y texto del status basado en el stock
-  const getStatusConfig = (stock: number) => {
-    if (stock === 0) return { text: "Out of stock", bg: "bg-red-50", textCol: "text-red-600", dot: "bg-red-500" };
-    if (stock < 20) return { text: "Low Stock", bg: "bg-orange-50", textCol: "text-orange-600", dot: "bg-orange-500" };
-    return { text: "In Stock", bg: "bg-green-50", textCol: "text-green-600", dot: "bg-green-500" };
+  // Función para manejar el envío real del formulario
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Guardando producto...");
+    // Aquí irá tu lógica para guardar en la base de datos
   };
 
   return (
-    <div className='flex flex-col w-full h-full bg-slate-50 min-h-screen p-6'>
-      <Header name='Inventario'/>
-      
-      {/* BARRA SUPERIOR: Buscador y Botones de Acción */}
-      <div className='mt-5 mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-200'>
+    <dialog id="modal_add_product" className='modal'>
+      <div className='modal-box p-6 rounded-2xl max-w-md md:max-w-3xl w-full bg-white shadow-xl custom-scrollbar'>
         
-        {/* Buscador */}
-        <div className='relative w-full sm:w-1/3 min-w-[250px]'>
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="text-gray-400" size={18} />
-          </div>
-          <input 
-            type='search' 
-            placeholder='Search...' 
-            className='pl-10 pr-4 py-2 w-full border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all duration-300' 
-            value={searchTerm} 
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        {/* BOTÓN CERRAR SUPERIOR */}
+        <form method="dialog" className='absolute right-5 top-5'>
+          <button className='text-gray-400 hover:text-red-600 transition-colors p-1 rounded-full hover:bg-red-50'>
+            <X className='size-5'/>
+          </button>
+        </form>
+
+        {/* TÍTULO PRINCIPAL */}
+        <div className='mb-6 border-b border-gray-100 pb-4'>
+          <h1 className='text-xl font-bold text-slate-800 flex items-center gap-2'>
+            <Box className="text-red-600" size={24} />
+            Agregar Nuevo Producto
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">Completa los datos para registrar un artículo en el inventario.</p>
         </div>
 
-        {/* Botones */}
-        <div className='flex items-center gap-3 w-full sm:w-auto'>
-          <button className='flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors'>
-            <SlidersHorizontal size={16} /> Sort
-          </button>
-          <button className='flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors'>
-            <ListFilter size={16} /> Filter
-          </button>
-          <button className='flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors shadow-sm shadow-red-600/20'>
-            <Plus size={18} /> Add Product
-          </button>
-        </div>
-      </div>
-
-      {/* TABLA DE PRODUCTOS */}
-      <div className='bg-white shadow-sm rounded-xl border border-gray-200 flex flex-col flex-1'>
-        <div className='overflow-x-auto'>
-          <table className='w-full text-left border-collapse whitespace-nowrap'>
-            <thead className='text-gray-500 text-xs font-semibold uppercase border-b border-gray-200'>
-              <tr>
-                <th className='px-6 py-4 w-12'><input type="checkbox" className="rounded border-gray-300 text-red-600 focus:ring-red-500 w-4 h-4 cursor-pointer" /></th>
-                <th className='px-6 py-4'>Product</th>
-                <th className='px-6 py-4'>Category</th>
-                <th className='px-6 py-4'>Status</th>
-                <th className='px-6 py-4'>Stock</th>
-                <th className='px-6 py-4'>Price</th>
-                <th className='px-6 py-4 text-center'>Action</th>
-              </tr>
-            </thead>
-
-            <tbody className='divide-y divide-gray-100'>
-              {filteredProducts.map((producto) => {
-                const status = getStatusConfig(producto.stock);
-                return (
-                  <tr key={producto.id} className='hover:bg-red-50/50 transition-colors duration-200 group'>
-                    {/* Checkbox */}
-                    <td className='px-6 py-4'>
-                      <input type="checkbox" className="rounded border-gray-300 text-red-600 focus:ring-red-500 w-4 h-4 cursor-pointer" />
-                    </td>
-                    
-                    {/* Producto (Imagen + Nombre) */}
-                    <td className='px-6 py-4'>
-                      <div className='flex items-center gap-3'>
-                        {/* Placeholder de imagen (Reemplaza el src con producto.imageUrl si tienes) */}
-                        <div className="w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 flex-shrink-0 overflow-hidden">
-                          <img src={`https://ui-avatars.com/api/?name=${producto.name}&background=f3f4f6&color=ef4444`} alt={producto.name} className="w-full h-full object-cover" />
-                        </div>
-                        <span className='font-semibold text-gray-800 text-sm'>{producto.name}</span>
-                      </div>
-                    </td>
-
-                    {/* Categoría */}
-                    <td className='px-6 py-4 text-sm text-gray-600 font-medium'>
-                      {producto.category.name || "General"}
-                    </td>
-
-                    {/* Status Badge */}
-                    <td className='px-6 py-4'>
-                      <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${status.bg} ${status.textCol}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`}></span>
-                        {status.text}
-                      </div>
-                    </td>
-
-                    {/* Stock */}
-                    <td className='px-6 py-4 text-sm text-gray-600 font-medium'>
-                      {producto.stock}
-                    </td>
-
-                    {/* Precio */}
-                    <td className='px-6 py-4 text-sm text-gray-800 font-semibold'>
-                      S/ {producto.price.toFixed(2)}
-                    </td>
-
-                    {/* Acciones */}
-                    <td className='px-6 py-4'>
-                      <div className='flex items-center justify-center gap-3'>
-                        <button className='text-gray-400 hover:text-red-600 transition-colors' title="Eliminar">
-                          <Trash2 size={18} />
-                        </button>
-                        <button className='text-gray-400 hover:text-blue-600 transition-colors' title="Editar">
-                          <PenLine size={18} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-
-          {/* Estado vacío */}
-          {filteredProducts.length === 0 && !isLoading && (
-            <div className="p-12 text-center text-gray-500 flex flex-col items-center">
-              <Search className="w-12 h-12 mb-4 text-gray-300" />
-              <h3 className="text-lg font-medium text-gray-900">No se encontraron productos</h3>
-              <p>No hay resultados que coincidan con "{searchTerm}"</p>
+        {/* FORMULARIO PRINCIPAL */}
+        <form className='flex flex-col w-full space-y-6' onSubmit={handleSubmit}>
+          
+          {/* --- SECCIÓN 1: DATOS DEL PRODUCTO --- */}
+          <div className="space-y-4">
+            <h2 className="text-sm font-bold text-red-600 tracking-wider uppercase">1. Datos del Producto</h2>
+            
+            <div className='flex sm:flex-row flex-col w-full gap-4'>
+              <div className='w-full group'>
+                <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>Nombre del Producto <span className="text-red-500">*</span></label>
+                <input type='text' placeholder="Ej. Leche Evaporada" required className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all'/>
+              </div>
+              <div className='w-full group'>
+                <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>Código de Barras</label>
+                <input type='text' placeholder="Ej. 775123456789" className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all'/>
+              </div>
             </div>
-          )}
-        </div>
 
-        {/* PAGINACIÓN INFERIOR */}
-        <div className='mt-auto border-t border-gray-200 px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4'>
-          <div className='flex items-center gap-2 text-sm text-gray-500'>
-            <span>Show</span>
-            <select className='border border-gray-200 rounded-md py-1 px-2 focus:outline-none focus:border-red-500 bg-white'>
-              <option>10</option>
-              <option>20</option>
-              <option>50</option>
-            </select>
-            <span>per page</span>
+            <div className='flex flex-col sm:flex-row gap-4 w-full'>
+              <div className='flex-1 group'>
+                <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>Categoría <span className="text-red-500">*</span></label>
+                <select className="select select-auto w-full px-3 py-2 bg-white text-gray-700 border border-gray-200 rounded-lg focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all" defaultValue="">
+                  <option value="" disabled className="text-gray-400">Selecciona una categoría</option>
+                  <option value="abarrotes">Abarrotes</option>
+                  <option value="bebidas">Bebidas</option>
+                  <option value="limpieza">Limpieza</option>
+                  <option value="lacteos">Lácteos</option>
+                </select>
+              </div>
+              
+              <div className='flex flex-col group'>
+                <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>Crear Categoría Rápida</label>
+                <div className='flex gap-x-2'>
+                  <input placeholder="Nueva categoría" className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all'/>
+                  <button type='button' disabled={user?.role !== 'admin'} className='px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium transition-colors disabled:opacity-50'>Crear</button>
+                </div>
+              </div>
+            </div>
+
+            <div className='flex flex-col sm:flex-row w-full gap-4'>
+              <div className='w-full group'>
+                <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>Costo (S/)</label>
+                <input type='number' step="0.01" placeholder="0.00" className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all'/>
+              </div>
+              <div className='w-full group'>
+                <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>Precio Venta (S/)</label>
+                <input type='number' step="0.01" placeholder="0.00" className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all'/>
+              </div>
+              <div className='w-full group'>
+                <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>Stock Inicial</label>
+                <input type='number' placeholder="0" className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all'/>
+              </div>
+            </div>
           </div>
 
-          <div className='flex items-center gap-1'>
-            <button className='p-1 text-gray-400 hover:text-red-600 disabled:opacity-50'><ChevronsLeft size={18}/></button>
-            <button className='p-1 text-gray-400 hover:text-red-600 disabled:opacity-50 mr-2'><ChevronLeft size={18}/></button>
+          <hr className="border-gray-100" />
+
+          {/* --- SECCIÓN 2: DATOS DEL PROVEEDOR --- */}
+          <div className="space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <h2 className="text-sm font-bold text-slate-800 tracking-wider uppercase flex items-center gap-2">
+              <Truck size={16} className="text-slate-500"/> 
+              2. Asignar Proveedor
+            </h2>
             
-            <button className='w-8 h-8 flex items-center justify-center rounded-md bg-red-50 text-red-600 font-semibold text-sm'>1</button>
-            <button className='w-8 h-8 flex items-center justify-center rounded-md hover:bg-gray-50 text-gray-600 font-medium text-sm'>2</button>
-            <button className='w-8 h-8 flex items-center justify-center rounded-md hover:bg-gray-50 text-gray-600 font-medium text-sm'>3</button>
-            <span className='px-1 text-gray-400'>...</span>
-            <button className='w-8 h-8 flex items-center justify-center rounded-md hover:bg-gray-50 text-gray-600 font-medium text-sm'>8</button>
-            
-            <button className='p-1 text-gray-400 hover:text-red-600 disabled:opacity-50 ml-2'><ChevronRight size={18}/></button>
-            <button className='p-1 text-gray-400 hover:text-red-600 disabled:opacity-50'><ChevronsRight size={18}/></button>
+            <div className='flex flex-col sm:flex-row w-full gap-4'>
+              <div className='flex-1 group'>
+                <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>Proveedor Existente</label>
+                <select className="select select-auto w-full px-3 py-2 bg-white text-gray-700 border border-gray-200 rounded-lg focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all" defaultValue="">
+                  <option value="" disabled className="text-gray-400">Selecciona un proveedor</option>
+                  <option value="1">Distribuidora del Centro</option>
+                  <option value="2">Macro</option>
+                </select>
+              </div>
+              <div className='flex flex-col group'>
+                <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>RUC de Proveedor Nuevo</label>
+                <div className='flex gap-x-2'>
+                  <input placeholder="Ej. 20123456789" className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all bg-white'/>
+                  <button type='button' disabled={user?.role !== 'admin'} className='px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm font-medium transition-colors disabled:opacity-50'>Buscar</button>
+                </div>
+              </div> 
+            </div>
+
+            {/* Campos de proveedor en grid */}
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+              <div className='col-span-1 sm:col-span-2 lg:col-span-3'>
+                <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>Razón Social</label>
+                <input type='text' disabled className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500'/>
+              </div>
+              <div>
+                <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>Dirección</label>
+                <input type='text' disabled className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500'/>
+              </div>
+              <div>
+                <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>Distrito</label>
+                <input type='text' disabled className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500'/>
+              </div>
+              <div>
+                <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>Condición</label>
+                <input type='text' disabled className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500'/>
+              </div>
+            </div>
+            <div className='flex justify-end pt-2'>
+                <button type='button' disabled={user?.role !== 'admin'} className='flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 shadow-sm'>Agregar Proveedor</button>
+            </div>
           </div>
-        </div>
+
+          {/* --- BOTONES DE ACCIÓN FINALES --- */}
+          <div className="flex justify-end pt-4 mt-6 border-t border-gray-100 space-x-3">
+            <form method="dialog" className="">
+              <button className='flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors'>Cancel</button>
+            </form>
+            <button type='submit' disabled={user?.role !== 'admin'} className='flex items-center gap-2 px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-bold transition-all shadow-md shadow-red-600/20 disabled:opacity-50 disabled:cursor-not-allowed'>Guardar Producto</button>
+          </div>
+        </form>
       </div>
-    </div>
+
+      {/* BACKDROP PARA CERRAR AL HACER CLIC AFUERA */}
+      <form method="dialog" className="modal-backdrop bg-slate-900/20 backdrop-blur-sm">
+        <button>Cerrar</button>
+      </form>
+    </dialog>
   )
 }

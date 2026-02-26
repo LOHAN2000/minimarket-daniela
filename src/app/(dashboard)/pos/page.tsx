@@ -5,7 +5,7 @@ import { ProductGrid } from '@/components/pos/ProductGrid'
 import { useCartStore } from '@/store/useCartStore'
 import { useProductStore } from "@/store/useProductStore";
 import { useRouter } from "next/navigation";
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react';
 import { toast, Toaster } from 'sonner';
 
 export default function POSPage() {
@@ -62,7 +62,6 @@ export default function POSPage() {
 
   return (
     <div className='flex flex-col h-full gap-3 w-full overflow-hidden'>
-      <Toaster position='bottom-left' richColors />
       <POSHeader onScan={handleScan} onSearchChange={setSearchTerm} onFilterClick={() => setIsFiltersOpen(!isFiltersOpen)}/>
       <div className={`transition-all duration-300 ease-in-out ${isFiltersOpen ? "max-h-20 opacity-100 mb-1" : "max-h-0 opacity-0 mb-0"}`}>
         <div className='bg-white p-3 rounded-xl border border-gray-200 shadow-sm flex items-center gap-2 overflow-x-auto scrollbar-hide'>
