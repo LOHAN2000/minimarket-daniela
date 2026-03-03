@@ -33,9 +33,9 @@ export interface Product {
 export interface newProduct {
   name: string;
   barcode: string;
-  price: number;
-  costPrice: number;
-  stock: number;
+  price: string;
+  costPrice: string;
+  stock: string;
   categoryId: number;
   supplierId: number;
 }
@@ -55,7 +55,7 @@ export interface newCategory {
 
 export interface SupplierApi {
   razon_social: string;
-  numero_documento: number;
+  numero_documento: string;
   estado: string;
   condicion: string;
   direccion: string;
@@ -63,4 +63,22 @@ export interface SupplierApi {
   distrito: string;
   provincia: string;
   departamento: string;
+}
+
+export interface NewSupplier {
+  ruc: string;
+  bussinessName: string;
+  address: string;
+  city: string;
+  region: string;
+}
+
+export interface Supplier {
+  id: number;
+  ruc: string;
+  bussinessName: string;
+  address: string;
+  city: string;
+  region: string;
+  createdAt: Date;
 }

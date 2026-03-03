@@ -1,14 +1,24 @@
 import { useAuthStore } from '@/store/useAuthStore'
 import { useProductStore } from '@/store/useProductStore';
-import { X, Box, Truck } from 'lucide-react'
+import { X, Box, Truck, LoaderCircle } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import { newCategory } from '../../../types';
+import { newCategory, newProduct } from '../../../types';
 
 export const AddProductModal = () => {
   const { user } = useAuthStore();
-  const { fetchCategories, categories, createCategory } = useProductStore();
+  const { fetchCategories, categories, createCategory, fetchSupplierRuc, supplierSunatApi, fetchSuppliers, suppliers, createSupplier, isLoadingSupplierSearch, isLoadingSupplierCreate, clearSunatApi, createProduct } = useProductStore();
 
   const [ newCategory, setNewCategory ] = useState<newCategory>();
+  const [ searchSupplier, setSearchSupplier ] = useState('');
+  const [ newProduct, setNewProduct ] = useState<newProduct>({
+    name: '',
+    barcode: '',
+    categoryId: 0,
+    costPrice: '',
+    price: '',
+    stock: '',
+    supplierId: 0,
+  });
 
   const handleCreateCategory = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,8 +27,39 @@ export const AddProductModal = () => {
     setNewCategory({name: ''});
   }
 
+  const handleSearchSupplier = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchSupplier) return;
+    await fetchSupplierRuc(searchSupplier);
+    console.log(supplierSunatApi)
+  }
+
+  const handleCreateSupplier = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supplierSunatApi) return;
+
+    const newSupplierData = {
+      ruc: supplierSunatApi.numero_documento,
+      bussinessName: supplierSunatApi.razon_social,
+      address: supplierSunatApi.direccion,
+      city: supplierSunatApi.distrito,
+      region: supplierSunatApi.provincia,
+    };
+    
+    await createSupplier(newSupplierData);
+    setSearchSupplier('');
+    clearSunatApi();
+  };
+
+  const handlerCreateProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await createProduct(newProduct);
+  }
+
+
   useEffect(() => {
     fetchCategories();
+    fetchSuppliers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -48,21 +89,21 @@ export const AddProductModal = () => {
             <div className='flex sm:flex-row flex-col w-full gap-4'>
               <div className='w-full group'>
                 <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>Nombre del Producto <span className="text-red-500">*</span></label>
-                <input type='text' placeholder="Ej. Leche Evaporada" required className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all'/>
+                <input type='text' placeholder="Ej. Leche Evaporada" required name='name' onChange={(e) => setNewProduct({...newProduct, name: e.target.value})} value={newProduct.name} className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all'/>
               </div>
               <div className='w-full group'>
                 <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>Código de Barras</label>
-                <input type='text' placeholder="Ej. 775123456789" className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all'/>
+                <input type='text' placeholder="Ej. 775123456789" name='barcode' onChange={(e) => setNewProduct({...newProduct, barcode: e.target.value})} value={newProduct.barcode} className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all'/>
               </div>
             </div>
 
             <div className='flex flex-col sm:flex-row gap-4 w-full'>
               <div className='flex-1 group'>
                 <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>Categoría <span className="text-red-500">*</span></label>
-                <select className="select select-bordered w-full bg-white text-gray-700 border-gray-200 rounded-lg focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:bg-white transition-all duration-300" defaultValue="">
-                  <option value="" disabled className="text-gray-400">Selecciona una categoría</option>
+                <select name='categoryId' onChange={(e) => setNewProduct({...newProduct, categoryId: Number(e.target.value)})} value={newProduct.categoryId} className="select select-bordered w-full bg-white text-gray-700 border-gray-200 rounded-lg focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:bg-white transition-all duration-300">
+                  <option value={0} disabled className="text-gray-400">Selecciona una categoría</option>
                   {categories?.map((item) => (
-                    <option key={item.id} value={item.name} className='text-gray-700 bg-white'>{item?.name}</option>
+                    <option key={item.id} value={item.id} className='text-gray-700 bg-white'>{item?.name}</option>
                   ))}
                 </select>
               </div>
@@ -79,15 +120,15 @@ export const AddProductModal = () => {
             <div className='flex flex-col sm:flex-row w-full gap-4'>
               <div className='w-full group'>
                 <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>Costo (S/)</label>
-                <input type='number' step="0.01" placeholder="0.00" className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all'/>
+                <input type='text' step="0.01" placeholder="0.00" name='costPrice' onChange={(e) => setNewProduct({...newProduct, costPrice: (e.target.value)})} value={newProduct.costPrice} className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all'/>
               </div>
               <div className='w-full group'>
                 <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>Precio Venta (S/)</label>
-                <input type='number' step="0.01" placeholder="0.00" className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all'/>
+                <input type='text' step="0.01" placeholder="0.00" name='price' onChange={(e) => setNewProduct({...newProduct, price: (e.target.value)})} value={newProduct.price} className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all'/>
               </div>
               <div className='w-full group'>
                 <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>Stock Inicial</label>
-                <input type='number' placeholder="0" className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all'/>
+                <input type='text' placeholder="0" name='stock' onChange={(e) => setNewProduct({...newProduct, stock: (e.target.value)})} value={newProduct.stock} className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all'/>
               </div>
             </div>
 
@@ -102,17 +143,18 @@ export const AddProductModal = () => {
               <div className='flex flex-col sm:flex-row w-full gap-4'>
                 <div className='flex-1 group'>
                   <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>Proveedor Existente</label>
-                  <select className="select select-bordered w-full bg-white text-gray-700 border-gray-200 rounded-lg focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:bg-white transition-all duration-300" defaultValue="">
-                    <option value="" disabled className="text-gray-400">Selecciona un proveedor</option>
-                    <option value="1" className='text-gray-700 bg-white'>Distribuidora del Centro</option>
-                    <option value="2" className='text-gray-700 bg-white'>Macro</option>
+                  <select name='supplierId' onChange={(e) => setNewProduct({...newProduct, supplierId: Number(e.target.value)})} value={newProduct.supplierId} className="select select-bordered w-full bg-white text-gray-700 border-gray-200 rounded-lg focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:bg-white transition-all duration-300">
+                    <option value={0} disabled className="text-gray-400">Selecciona un proveedor</option>
+                    {suppliers?.map((item) => (
+                      <option key={item.id} value={item.id} className='text-gray-700 bg-white'>{item?.bussinessName}</option>
+                    ))}
                   </select>
                 </div>
                 <div className='flex flex-col group'>
                   <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>RUC de Proveedor Nuevo</label>
                   <div className='flex gap-x-2'>
-                    <input placeholder="Ej. 20123456789" className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all bg-white'/>
-                    <button type='button' disabled={user?.role !== 'admin'} className='px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm font-medium transition-colors disabled:opacity-50'>Buscar</button>
+                    <input placeholder="Ej. 20123456789" onChange={(e) => setSearchSupplier(e.target.value)} value={searchSupplier} className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all bg-white'/>
+                    <button type='button' disabled={searchSupplier.length < 11} onClick={handleSearchSupplier} className='px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm font-medium transition-colors disabled:opacity-50'>{isLoadingSupplierSearch ? <LoaderCircle className='animate-spin text-slate-700 w-full'/> : 'Buscar'}</button>
                   </div>
                 </div> 
               </div>
@@ -120,23 +162,23 @@ export const AddProductModal = () => {
               <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
                 <div className='col-span-1 sm:col-span-2 lg:col-span-3'>
                   <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>Razón Social</label>
-                  <input type='text' disabled className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500'/>
+                  <input type='text' disabled value={supplierSunatApi?.razon_social} className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500'/>
                 </div>
                 <div>
                   <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>Dirección</label>
-                  <input type='text' disabled className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500'/>
+                  <input type='text' disabled value={supplierSunatApi?.direccion} className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500'/>
                 </div>
                 <div>
                   <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>Distrito</label>
-                  <input type='text' disabled className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500'/>
+                  <input type='text' disabled value={supplierSunatApi?.distrito} className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500'/>
                 </div>
                 <div>
                   <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>Condición</label>
-                  <input type='text' disabled className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500'/>
+                  <input type='text' disabled value={supplierSunatApi?.condicion} className='w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500'/>
                 </div>
                 </div>
                 <div className='flex justify-end pt-2'>
-                    <button type='button' disabled={user?.role !== 'admin'} className='flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 shadow-sm'>Agregar Proveedor</button>
+                    <button type='button' disabled={!supplierSunatApi && user?.role !== 'admin'} onClick={handleCreateSupplier} className='flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 shadow-sm'>{isLoadingSupplierCreate ? <LoaderCircle className='animate-spin text-slate-700 w-full'/> : 'Agregar Proveedor'}</button>
                 </div>
             </div>
 
@@ -144,7 +186,7 @@ export const AddProductModal = () => {
               <form method="dialog" className="">
                 <button className='flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors'>Cancel</button>
               </form>
-              <button type='submit' disabled={user?.role !== 'admin'} className='flex items-center gap-2 px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-bold transition-all shadow-md shadow-red-600/20 disabled:opacity-50 disabled:cursor-not-allowed'>Guardar Producto</button>
+              <button type='submit' disabled={user?.role !== 'Admin' || !newProduct.name || !newProduct.barcode || !newProduct.categoryId || !newProduct.costPrice || !newProduct.price || !newProduct.stock} onClick={handlerCreateProduct} className='flex items-center gap-2 px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-bold transition-all shadow-md shadow-red-600/20 disabled:opacity-50 disabled:cursor-not-allowed'>Guardar Producto</button>
             </div>
 
           </div>
@@ -157,3 +199,5 @@ export const AddProductModal = () => {
     </dialog>
   )
 }
+
+// TODO: Crear un sistema para limpiar los inputs de los proveedores despues de la creacion.

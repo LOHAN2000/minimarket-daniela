@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,7 +16,6 @@ export default function RootLayout({children,}: Readonly<{children: React.ReactN
         <div className="h-screen w-full">
           {children}
         </div>
-        <Toaster richColors position="bottom-left" />
       </body>
     </html>
   );

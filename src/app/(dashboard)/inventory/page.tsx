@@ -97,7 +97,7 @@ export default function Inventory() {
                       </div>
                     </td>
                     <td className='px-6 py-4 text-sm text-gray-600 font-medium'>
-                      {producto.category.name || "General"}
+                      {producto.category?.name || "General"}
                     </td>
                     <td className='px-6 py-4'>
                       <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${status.bg} ${status.textCol}`}>
