@@ -3,12 +3,13 @@ import { useProductStore } from '@/store/useProductStore';
 import { X, Box, Truck, LoaderCircle } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { newCategory, newProduct } from '../../../types';
+import { toast } from 'sonner';
 
 export const AddProductModal = () => {
   const { user } = useAuthStore();
-  const { fetchCategories, categories, createCategory, fetchSupplierRuc, supplierSunatApi, fetchSuppliers, suppliers, createSupplier, isLoadingSupplierSearch, isLoadingSupplierCreate, clearSunatApi, createProduct } = useProductStore();
+  const { fetchCategories, categories, createCategory, fetchSupplierRuc, supplierSunatApi, fetchSuppliers, suppliers, createSupplier, isLoadingSupplierSearch, isLoadingSupplierCreate, clearSunatApi, createProduct, error, isLoadingProduct } = useProductStore();
 
-  const [ newCategory, setNewCategory ] = useState<newCategory>();
+  const [ newCategory, setNewCategory ] = useState<newCategory>({ name: ''});
   const [ searchSupplier, setSearchSupplier ] = useState('');
   const [ newProduct, setNewProduct ] = useState<newProduct>({
     name: '',
@@ -53,15 +54,46 @@ export const AddProductModal = () => {
 
   const handlerCreateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    await createProduct(newProduct);
-  }
+    const response = await createProduct(newProduct);
 
+    const modal = document.getElementById('modal_add_product') as HTMLDialogElement | null;
+    
+    if (response.success) {
+      modal?.close();
+      setNewProduct({
+        name: '',
+        barcode: '',
+        categoryId: 0,
+        costPrice: '',
+        price: '',
+        stock: '',
+        supplierId: 0,
+      });
+      toast.success('Producto creado correctamente');
+    } else if (response.success == false) {
+      toast.error('Error al crear el producto');
+    }
+  }
 
   useEffect(() => {
     fetchCategories();
     fetchSuppliers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  useEffect(() => {
+    const modal = document.getElementById('modal_add_product') as HTMLDialogElement;
+    
+    const handleClose = () => {
+      useProductStore.setState({ error: null });
+      setNewProduct({ name: '', barcode: '', categoryId: 0, costPrice: '', price: '', stock: '', supplierId: 0 });
+      setNewCategory({ name: '' });
+      setSearchSupplier('');
+    };
+
+    modal?.addEventListener('close', handleClose);
+    return () => modal?.removeEventListener('close', handleClose);
+  }, []);
 
 
   return (
@@ -182,11 +214,16 @@ export const AddProductModal = () => {
                 </div>
             </div>
 
-            <div className="flex justify-end pt-4 mt-6 border-t border-gray-100 space-x-3">
-              <form method="dialog" className="">
-                <button className='flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors'>Cancel</button>
-              </form>
-              <button type='submit' disabled={user?.role !== 'Admin' || !newProduct.name || !newProduct.barcode || !newProduct.categoryId || !newProduct.costPrice || !newProduct.price || !newProduct.stock} onClick={handlerCreateProduct} className='flex items-center gap-2 px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-bold transition-all shadow-md shadow-red-600/20 disabled:opacity-50 disabled:cursor-not-allowed'>Guardar Producto</button>
+            <div className="flex pt-4 mt-6 border-t border-gray-100 space-x-3">
+              {error && (
+                <div className='flex truncate text-sm text-red-400 items-center'>
+                  {error}
+                </div>
+              )}
+              <div className='flex gap-4 ms-auto'>
+                <button type='button' onClick={() => {const modal = document.getElementById('modal_add_product') as HTMLDialogElement; modal?.close();}} className='flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors'>Cancel</button>
+                <button type='submit' disabled={isLoadingProduct || user?.role !== 'Admin' || !newProduct.name || !newProduct.barcode || !newProduct.categoryId || !newProduct.costPrice || !newProduct.price || !newProduct.stock} onClick={handlerCreateProduct} className='flex items-center gap-2 min-w-35 px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-bold transition-all shadow-md shadow-red-600/20 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden'>{isLoadingProduct ? <LoaderCircle className='animate-spin text-white w-full'/> : 'Crear Producto'}</button>
+              </div>
             </div>
 
           </div>
@@ -200,4 +237,3 @@ export const AddProductModal = () => {
   )
 }
 
-// TODO: Crear un sistema para limpiar los inputs de los proveedores despues de la creacion.

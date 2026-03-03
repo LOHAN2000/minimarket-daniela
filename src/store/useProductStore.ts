@@ -1,7 +1,8 @@
 import api from "@/lib/api";
 import { create } from "zustand";
-import { Category, newCategory, newProduct, NewSupplier, Product, Supplier, SupplierApi } from "../../types";
+import { Category, newCategory, newProduct, NewSupplier, Product, StoreResult, Supplier, SupplierApi } from "../../types";
 import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 interface ProductState {
   products: Product[];
@@ -17,7 +18,7 @@ interface ProductState {
   error: string | null;
 
   fetchProducts: () => Promise<void>;
-  createProduct: (product: newProduct) => Promise<void>;
+  createProduct: (product: newProduct) => StoreResult<Product>;
   fetchCategories: () => Promise<void>
   searchProducts: (term: string) => Promise<void>;
   createCategory: (newCategory: newCategory) => Promise<void>
@@ -76,9 +77,13 @@ export const useProductStore = create<ProductState>((set) => ({
         products: [...state.products, response.data],
         isLoadingProduct: false
       }))
+      return { success: true, data: response.data };
+
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred in searchProducts";
-      set({ error: errorMessage, isLoading: false})
+      const err = error as AxiosError;
+      const errorMessage = err.response?.data as string || "An unknown error occurred";
+      set({ error: errorMessage, isLoadingProduct: false})
+      return { success: false, error: errorMessage };
     }
   },
 

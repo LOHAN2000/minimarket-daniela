@@ -5,6 +5,7 @@ import { useProductStore } from '@/store/useProductStore';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ListFilter, PenLine, Plus, Search, SlidersHorizontal, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react'
+import { Toaster } from 'sonner';
 
 export default function Inventory() {
 
@@ -28,7 +29,7 @@ export default function Inventory() {
 
   return (
     <div className='w-full h-full flex flex-col p-4 overflow-hidden bg-slate-50'>
-      
+      <Toaster/>
       <Header name='Inventario'/>
       
       {/* EL TRUCO: flex-wrap permite que si el sidebar empuja los elementos 

@@ -1,3 +1,13 @@
+// Store 
+
+export type StoreResult<T = void> = Promise<{
+  success: boolean;
+  data?: T;
+  error?: string;
+}>
+
+// Login && User
+
 export interface newUser {
   name: string,
   lastName: string,
