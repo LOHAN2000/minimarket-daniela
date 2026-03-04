@@ -14,14 +14,18 @@ interface ProductState {
   isLoadingSupplier: boolean;
   isLoadingSupplierCreate: boolean;
   isLoadingSupplierSearch: boolean;
+  isLoadingDeleteProduct: boolean;
   isLoadingProduct: boolean;
   error: string | null;
 
   fetchProducts: () => Promise<void>;
   createProduct: (product: newProduct) => StoreResult<Product>;
+  deleteProduct: (id: number) => StoreResult<Product>;
+
   fetchCategories: () => Promise<void>
+  createCategory: (newCategory: newCategory) => Promise<void>;
+
   searchProducts: (term: string) => Promise<void>;
-  createCategory: (newCategory: newCategory) => Promise<void>
   fetchSupplierRuc: (ruc: string) => Promise<void>;
   createSupplier: (newSupplier: NewSupplier) => Promise<void>;
   fetchSuppliers: () => Promise<void>;
@@ -42,6 +46,7 @@ export const useProductStore = create<ProductState>((set) => ({
   isLoadingSupplierCreate: false,
   isLoadingSupplierSearch: false,
   isLoadingProduct: false,
+  isLoadingDeleteProduct: false,
   error: null,
 
   fetchProducts: async () => {
@@ -114,6 +119,25 @@ export const useProductStore = create<ProductState>((set) => ({
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "An unknown error occurred in createCategory";
       set({ error: errorMessage, isLoading: false});
+    }
+  },
+
+  deleteProduct: async (id) => {
+    set({ isLoadingDeleteProduct: true, error: null})
+
+    try {
+      const response = await api.delete(`/products/${id}`)
+      set((state) => ({
+        products: state.products.filter((product) => product.id !== id),
+        isLoadingDeleteProduct: false
+      }))
+
+      return { success: true, data: response.data };
+    } catch (error) {
+      const err = error as AxiosError;
+      const errorMessage = err.response?.data as string || "An unknown error occurred";
+      set({ error: errorMessage, isLoadingDeleteProduct: false})
+      return { success: false, error: errorMessage };
     }
   },
 

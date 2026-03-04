@@ -1,16 +1,22 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 "use client"
 import { Header } from '@/components/Header';
 import { AddProductModal } from '@/components/inventory/AddProductModal';
+import { DeleteProductModal } from '@/components/inventory/DeleteProductModal';
 import { useProductStore } from '@/store/useProductStore';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ListFilter, PenLine, Plus, Search, SlidersHorizontal, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react'
 import { Toaster } from 'sonner';
+import { Product } from '../../../../types';
 
 export default function Inventory() {
 
-  const { products, fetchProducts, isLoading } = useProductStore();
+  const { products, fetchProducts, isLoading} = useProductStore();
+  
   const [searchTerm, setSearchTerm] = useState("");
+  const [ isDeleteOpen, setIsDeleteOpen ] = useState(false);
+  const [ productToDelete, setProductToDelete ] = useState<Product | null>(null);
 
   useEffect(() => {
     fetchProducts();
@@ -71,10 +77,10 @@ export default function Inventory() {
         </div>
       </div>
 
-      <div className='bg-white shadow-sm rounded-xl border border-gray-200 flex flex-col flex-1'>
-        <div className='overflow-x-auto'>
+      <div className='bg-white shadow-sm rounded-xl border border-gray-200 flex flex-col flex-1 overflow-y-auto'>
+        <div className='overflow-x-auto '>
           <table className='w-full text-left border-collapse whitespace-nowrap'>
-            <thead className='text-gray-500 text-xs font-semibold uppercase border-b border-gray-200'>
+            <thead className='text-gray-500 text-xs font-semibold uppercase border-b border-gray-200 sticky top-0 z-10 bg-white'>
               <tr>
                 <th className='px-6 py-4'>Product</th>
                 <th className='px-6 py-4'>Category</th>
@@ -114,7 +120,7 @@ export default function Inventory() {
                     </td>
                     <td className='px-6 py-4'>
                       <div className='flex items-center justify-center gap-3'>
-                        <button className='text-gray-400 hover:text-red-600 transition-colors' title="Eliminar">
+                        <button onClick={() => {setIsDeleteOpen(true), setProductToDelete(producto)}} className='text-gray-400 hover:text-red-600 transition-colors' title="Eliminar">
                           <Trash2 size={18} />
                         </button>
                         <button className='text-gray-400 hover:text-blue-600 transition-colors' title="Editar">
@@ -164,6 +170,7 @@ export default function Inventory() {
 
       {/*MODAL*/}
       <AddProductModal/>
+      <DeleteProductModal isOpen={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} product={productToDelete}/>
     </div>
   )
 }
