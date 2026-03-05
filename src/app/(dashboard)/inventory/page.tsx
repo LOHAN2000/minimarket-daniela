@@ -9,6 +9,7 @@ import Image from 'next/image';
 import React, { useEffect, useState } from 'react'
 import { Toaster } from 'sonner';
 import { Product } from '../../../../types';
+import { EditProductModal } from '@/components/inventory/EditProductModal';
 
 export default function Inventory() {
 
@@ -17,6 +18,7 @@ export default function Inventory() {
   const [searchTerm, setSearchTerm] = useState("");
   const [ isDeleteOpen, setIsDeleteOpen ] = useState(false);
   const [ productToDelete, setProductToDelete ] = useState<Product | null>(null);
+  const [ productToUpdate, setProductToUpdate ] = useState<Product | null>(null);
 
   useEffect(() => {
     fetchProducts();
@@ -82,11 +84,12 @@ export default function Inventory() {
           <table className='w-full text-left border-collapse whitespace-nowrap'>
             <thead className='text-gray-500 text-xs font-semibold uppercase border-b border-gray-200 sticky top-0 z-10 bg-white'>
               <tr>
-                <th className='px-6 py-4'>Product</th>
-                <th className='px-6 py-4'>Category</th>
-                <th className='px-6 py-4'>Status</th>
-                <th className='px-6 py-4'>Stock</th>
-                <th className='px-6 py-4'>Price</th>
+                <th className='px-6 py-4'>Producto</th>
+                <th className='px-6 py-4 text-center'>Categoría</th>
+                <th className='px-6 py-4 text-center'>Estado</th>
+                <th className='px-6 py-4 text-center'>Stock</th>
+                <th className='px-6 py-4 text-center'>Costo</th>
+                <th className='px-6 py-4 text-center'>Precio Venta</th>
                 <th className='px-6 py-4 text-center'>Action</th>
               </tr>
             </thead>
@@ -95,7 +98,7 @@ export default function Inventory() {
                 const status = getStatusConfig(producto.stock);
                 return (
                   <tr key={producto.id} className='hover:bg-red-50/50 transition-colors duration-200 group'>
-                    <td className='px-6 py-4'>
+                    <td className='px-6 py-4 flex '>
                       <div className='flex items-center gap-3'>
                         <div className="w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 shrink-0 overflow-hidden">
                           <Image unoptimized src={`https://ui-avatars.com/api/?name=${producto.name}&background=f3f4f6&color=ef4444`} alt={producto.name} width={110} height={110} className="w-full h-full object-cover" />
@@ -103,19 +106,22 @@ export default function Inventory() {
                         <span className='font-semibold text-gray-800 text-sm'>{producto.name}</span>
                       </div>
                     </td>
-                    <td className='px-6 py-4 text-sm text-gray-600 font-medium'>
+                    <td className='px-6 py-4 text-sm text-gray-600 font-medium text-center'>
                       {producto.category?.name || "General"}
                     </td>
-                    <td className='px-6 py-4'>
+                    <td className='px-6 py-4 text-center'>
                       <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${status.bg} ${status.textCol}`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`}></span>
                         {status.text}
                       </div>                      
                     </td>
-                     <td className='px-8 py-4 text-sm text-gray-600 font-medium'>
+                     <td className='px-8 py-4 text-sm text-gray-600 font-medium text-center'>
                       {producto.stock}
                     </td>
-                    <td className='px-6 py-4 text-sm text-gray-800 font-semibold'>
+                    <td className='px-6 py-4 text-sm text-gray-800 font-semibold text-center'>
+                      S/ {producto.costPrice.toFixed(2)}
+                    </td>
+                    <td className='px-9 py-4 text-sm text-gray-800 font-semibold text-center'>
                       S/ {producto.price.toFixed(2)}
                     </td>
                     <td className='px-6 py-4'>
@@ -123,7 +129,7 @@ export default function Inventory() {
                         <button onClick={() => {setIsDeleteOpen(true), setProductToDelete(producto)}} className='text-gray-400 hover:text-red-600 transition-colors' title="Eliminar">
                           <Trash2 size={18} />
                         </button>
-                        <button className='text-gray-400 hover:text-blue-600 transition-colors' title="Editar">
+                        <button onClick={() => {setProductToUpdate(producto); const modal = document.getElementById('modal_edit_product') as HTMLDialogElement; modal?.showModal();}} className='text-gray-400 hover:text-blue-600 transition-colors' title="Editar">
                           <PenLine size={18} />
                         </button>
                       </div>
@@ -171,6 +177,7 @@ export default function Inventory() {
       {/*MODAL*/}
       <AddProductModal/>
       <DeleteProductModal isOpen={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} product={productToDelete}/>
+      <EditProductModal product={productToUpdate}/>
     </div>
   )
 }

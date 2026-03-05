@@ -26,10 +26,9 @@ export const DeleteProductModal = ({ isOpen, onClose, product }: Props) => {
     }
   };
 
-  console.log(product)
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent  className='max-w-sm'>
+      <DialogContent className='max-w-sm'>
         <DialogHeader>
           <DialogTitle className='text-xl'>Eliminar Producto</DialogTitle>
         </DialogHeader>

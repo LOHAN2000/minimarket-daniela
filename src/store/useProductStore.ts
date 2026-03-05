@@ -1,6 +1,6 @@
 import api from "@/lib/api";
 import { create } from "zustand";
-import { Category, newCategory, newProduct, NewSupplier, Product, StoreResult, Supplier, SupplierApi } from "../../types";
+import { Category, newCategory, newProduct, NewSupplier, Product, StoreResult, Supplier, SupplierApi, UpdateProduct } from "../../types";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 
@@ -15,11 +15,13 @@ interface ProductState {
   isLoadingSupplierCreate: boolean;
   isLoadingSupplierSearch: boolean;
   isLoadingDeleteProduct: boolean;
+  isLoadingUpdateProduct: boolean;
   isLoadingProduct: boolean;
   error: string | null;
 
   fetchProducts: () => Promise<void>;
   createProduct: (product: newProduct) => StoreResult<Product>;
+  updateProduct: (id: number, product: UpdateProduct) => StoreResult<Product>;
   deleteProduct: (id: number) => StoreResult<Product>;
 
   fetchCategories: () => Promise<void>
@@ -47,6 +49,7 @@ export const useProductStore = create<ProductState>((set) => ({
   isLoadingSupplierSearch: false,
   isLoadingProduct: false,
   isLoadingDeleteProduct: false,
+  isLoadingUpdateProduct: false,
   error: null,
 
   fetchProducts: async () => {
@@ -88,6 +91,25 @@ export const useProductStore = create<ProductState>((set) => ({
       const err = error as AxiosError;
       const errorMessage = err.response?.data as string || "An unknown error occurred";
       set({ error: errorMessage, isLoadingProduct: false})
+      return { success: false, error: errorMessage };
+    }
+  },
+
+  updateProduct: async (id, product) => {
+    set({ isLoadingUpdateProduct: true, error: null })
+    
+    try {
+      const response = await api.put(`/products/${id}`, product);
+      set((state) => ({
+        products: state.products.map((p) => p.id === id ? response.data : p),
+        isLoadingUpdateProduct: false
+      }));
+      return { success: true, data: response.data }  
+
+    } catch (error) {
+      const err = error as AxiosError;;
+      const errorMessage = err.response?.data as string || "An unknow error ocurred in updateProduct";
+      set({ error: errorMessage, isLoadingUpdateProduct: false })
       return { success: false, error: errorMessage };
     }
   },

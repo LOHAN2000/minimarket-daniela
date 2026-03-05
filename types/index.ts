@@ -35,10 +35,22 @@ export interface Product {
   costPrice: number;
   stock: number;
   category: Category;
+  categoryId: number;
   supplierId: number;
   supplier: string;
   createdAt: Date;
 }
+
+export interface UpdateProduct {
+  name: string;
+  barcode: string;
+  price: string;
+  costPrice: string;
+  stock: string;
+  categoryId: number;
+  supplierId: number;
+}
+
 
 export interface newProduct {
   name: string;
