@@ -16,6 +16,7 @@ interface ProductState {
   isLoadingSupplierSearch: boolean;
   isLoadingDeleteProduct: boolean;
   isLoadingUpdateProduct: boolean;
+  isLoadingProducts: boolean;
   isLoadingProduct: boolean;
   error: string | null;
 
@@ -42,7 +43,8 @@ export const useProductStore = create<ProductState>((set) => ({
   suppliers: [],
   supplierSunatApi: null,
   categories: [],
-  isLoading: false,
+  isLoading: true,
+  isLoadingProducts: true,
   isLoadingCategory: false,
   isLoadingSupplier: false,
   isLoadingSupplierCreate: false,
@@ -53,15 +55,15 @@ export const useProductStore = create<ProductState>((set) => ({
   error: null,
 
   fetchProducts: async () => {
-    set({ isLoading: true, error: null})
+    set({ isLoadingProducts: true, error: null})
 
     try {
       const response = await api.get('/products');
-      set({ products: response.data, isLoading: false});
+      set({ products: response.data, isLoadingProducts: false});
       console.log(response.data)
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "An unknown error occurred in fetchProducts";
-      set({ error: errorMessage, isLoading: false});
+      set({ error: errorMessage, isLoadingProducts: false});
     }
   },
 

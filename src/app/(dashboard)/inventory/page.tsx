@@ -10,11 +10,11 @@ import React, { useEffect, useState } from 'react'
 import { Toaster } from 'sonner';
 import { Product } from '../../../../types';
 import { EditProductModal } from '@/components/inventory/EditProductModal';
+import { TableRowSkeleton } from '@/components/skeletons/TableRowSkeleton';
 
 export default function Inventory() {
 
-  const { products, fetchProducts, isLoading} = useProductStore();
-  
+  const { products, fetchProducts, isLoadingProducts } = useProductStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [ isDeleteOpen, setIsDeleteOpen ] = useState(false);
   const [ productToDelete, setProductToDelete ] = useState<Product | null>(null);
@@ -79,7 +79,7 @@ export default function Inventory() {
         </div>
       </div>
 
-      <div className='bg-white shadow-sm rounded-xl border border-gray-200 flex flex-col flex-1 overflow-y-auto'>
+      <div className='bg-white shadow-sm rounded-xl border border-gray-200 flex flex-col flex-1 overflow-y-auto w-full'>
         <div className='overflow-x-auto '>
           <table className='w-full text-left border-collapse whitespace-nowrap'>
             <thead className='text-gray-500 text-xs font-semibold uppercase border-b border-gray-200 sticky top-0 z-10 bg-white'>
@@ -139,7 +139,14 @@ export default function Inventory() {
               })}
             </tbody>
           </table>
-          {filteredProducts.length === 0 && !isLoading && (
+          {isLoadingProducts && (
+            <div className='flex flex-col w-full'>
+              <tbody className='divide-y divide-gray-100 w-full'>
+                {[...Array(10)].map((_, i) => <TableRowSkeleton key={i}/>)}
+              </tbody>
+            </div>
+          )}
+          {filteredProducts.length === 0 && !isLoadingProducts && (
             <div className="p-12 text-center text-gray-500 flex flex-col items-center">
               <Search className="w-12 h-12 mb-4 text-gray-300" />
               <h3 className="text-lg font-medium text-gray-900">No se encontraron productos</h3>

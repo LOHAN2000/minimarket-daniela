@@ -44,11 +44,11 @@ export const EditProductModal = ({ product }: Props) => {
     setEditProduct({
       name: product.name,
       barcode: product.barcode,
-      categoryId: product.categoryId,
+      categoryId: product.categoryId ?? 0,
       costPrice: product.costPrice as unknown as string,
       price: product.price as unknown as string,
       stock: product.stock as unknown as string,
-      supplierId: product.supplierId,
+      supplierId: product.supplierId ?? 0,
     })
   }, [product])
 
@@ -81,14 +81,14 @@ export const EditProductModal = ({ product }: Props) => {
 
         <div className='mb-6 border-b border-gray-100 pb-4'>
           <h1 className='text-xl font-bold text-slate-800 flex items-center gap-2'>
-            <Box className="text-blue-600" size={24} />
+            <Box className="text-red-600" size={24} />
             Editar Producto
           </h1>
         </div>
 
         <form className='flex flex-col w-full space-y-6'>
           <div className='space-y-4'>
-            <h2 className='text-sm font-bold text-blue-600 tracking-wider uppercase'>Datos del Producto</h2>
+            <h2 className='text-sm font-bold text-red-600 tracking-wider uppercase'>Datos del Producto</h2>
 
             <div className='flex sm:flex-row flex-col w-full gap-4'>
               <div className='w-full'>
@@ -145,7 +145,7 @@ export const EditProductModal = ({ product }: Props) => {
                 <button type='button' onClick={() => { const modal = document.getElementById('modal_edit_product') as HTMLDialogElement; modal?.close(); }} className='flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors'>
                   Cancelar
                 </button>
-                <button type='submit' disabled={isLoadingUpdateProduct || user?.role !== 'Admin' || !editProduct?.name || !editProduct.barcode || !editProduct.categoryId || !editProduct.costPrice || !editProduct.price || !editProduct.stock} onClick={handleSubmit} className='flex items-center justify-center min-w-40 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-bold transition-all shadow-md shadow-blue-600/20 disabled:opacity-50 disabled:cursor-not-allowed'>
+                <button type='submit' disabled={isLoadingUpdateProduct || user?.role !== 'Admin' || !editProduct?.name || !editProduct.barcode || !editProduct.categoryId || !editProduct.costPrice || !editProduct.price || !editProduct.stock} onClick={handleSubmit} className='flex items-center justify-center min-w-40 px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-bold transition-all shadow-md shadow-blue-600/20 disabled:opacity-50 disabled:cursor-not-allowed'>
                   {isLoadingUpdateProduct ? <LoaderCircle className='animate-spin size-4'/> : 'Guardar Cambios'}
                 </button>
               </div>
