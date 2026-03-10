@@ -25,6 +25,9 @@ export default function Inventory() {
   const [ sortBy, setSortBy ] = useState("name-asc"); 
   const [ isFiltersOpen, setIsFiltersOpen ] = useState(false);
 
+  const [ currentPage, setCurrentPage ] = useState(1);
+  const [ itemsPerPage, setItemsPerPage ] = useState(10);
+
   const categories = ["Todos", ...new Set(products.map(p => p.category.name || "General"))];
 
   useEffect(() => {
@@ -69,6 +72,11 @@ export default function Inventory() {
 
     return result;
   }, [products, searchTerm, selectedCategory, sortBy])
+
+  const totalItems = filteredAndSortedProducts.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage); // Esta linea se encarga de calcular el total de paginas dependiendo del numero de items por pagina, math.cell redondea hacia arriba para evitar problemas cuando el numero de items no es divisible exactamente por itemsPerPage 
+
+  const paginatedProducts = filteredAndSortedProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const getStatusConfig = (stock: number) => {
     if (stock === 0) return { text: "Out of stock", bg: "bg-red-50", textCol: "text-red-600", dot: "bg-red-500" };
@@ -142,7 +150,7 @@ export default function Inventory() {
               </tr>
             </thead>
             <tbody className='divide-y divide-gray-100'>
-              {filteredAndSortedProducts.map((producto) => {
+              {paginatedProducts.map((producto) => {
                 const status = getStatusConfig(producto.stock);
                 return (
                   <tr key={producto.id} className='hover:bg-red-50/50 transition-colors duration-200 group'>
@@ -194,7 +202,7 @@ export default function Inventory() {
               </tbody>
             </table>
           )}
-          {filteredAndSortedProducts.length === 0 && !isLoadingProducts && (
+          {paginatedProducts.length === 0 && !isLoadingProducts && (
             <div className="p-12 text-center text-gray-500 flex flex-col items-center">
               <Search className="w-12 h-12 mb-4 text-gray-300" />
               <h3 className="text-lg font-medium text-gray-900">No se encontraron productos</h3>
@@ -204,27 +212,26 @@ export default function Inventory() {
         </div>
         <div className='mt-auto border-t border-gray-200 px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4'>
           <div className='flex items-center gap-2 text-sm text-gray-500'>
-            <span>Show</span>
-            <select className='border border-gray-200 rounded-md py-1 px-2 focus:outline-none focus:border-red-500 bg-white'>
-              <option>10</option>
-              <option>20</option>
-              <option>50</option>
+            <span>Mostrar</span>
+            <select value={itemsPerPage} onChange={(e) => {setItemsPerPage(Number(e.target.value)), setCurrentPage(1);}} className='border border-gray-200 rounded-md py-1 px-2 focus:outline-none focus:border-red-500 bg-white'>
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
             </select>
-            <span>per page</span>
+            <span>por página</span>
+            <span className="ml-4 border-l pl-4 border-gray-300">
+              Total: <span className="font-bold text-gray-700">{totalItems}</span> productos
+            </span>
           </div>
 
           <div className='flex items-center gap-1'>
-            <button className='p-1 text-gray-400 hover:text-red-600 disabled:opacity-50'><ChevronsLeft size={18}/></button>
-            <button className='p-1 text-gray-400 hover:text-red-600 disabled:opacity-50 mr-2'><ChevronLeft size={18}/></button>
-            
-            <button className='w-8 h-8 flex items-center justify-center rounded-md bg-red-50 text-red-600 font-semibold text-sm'>1</button>
-            <button className='w-8 h-8 flex items-center justify-center rounded-md hover:bg-gray-50 text-gray-600 font-medium text-sm'>2</button>
-            <button className='w-8 h-8 flex items-center justify-center rounded-md hover:bg-gray-50 text-gray-600 font-medium text-sm'>3</button>
-            <span className='px-1 text-gray-400'>...</span>
-            <button className='w-8 h-8 flex items-center justify-center rounded-md hover:bg-gray-50 text-gray-600 font-medium text-sm'>8</button>
-            
-            <button className='p-1 text-gray-400 hover:text-red-600 disabled:opacity-50 ml-2'><ChevronRight size={18}/></button>
-            <button className='p-1 text-gray-400 hover:text-red-600 disabled:opacity-50'><ChevronsRight size={18}/></button>
+            <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1} className='p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md disabled:opacity-30 disabled:hover:bg-transparent transition-colors'><ChevronLeft size={18}/></button>
+            <button onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} className='p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md disabled:opacity-30 disabled:hover:bg-transparent transition-colors'><ChevronLeft size={18}/></button>
+            <div className='flex items-center gap-2 text-sm text-gray-600 px-2 font-medium'>
+              <span className='flex items-center gap-2'>Página<span className='w-8 h-8 flex items-center justify-center rounded-md bg-white border border-gray-200 shadow-sm text-red-600 font-bold'>{currentPage}</span> de {totalPages || 1}</span>
+            </div>
+            <button onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages || totalPages === 0} className='p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md disabled:opacity-30 disabled:hover:bg-transparent ml-2 transition-colors'><ChevronRight size={18}/></button>
+            <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages || totalPages === 0} className='p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md disabled:opacity-30 disabled:hover:bg-transparent transition-colors'><ChevronRight size={18}></ChevronRight></button>
           </div>
         </div>
       </div>
