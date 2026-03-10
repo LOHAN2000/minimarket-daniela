@@ -4,9 +4,9 @@ import { Header } from '@/components/Header';
 import { AddProductModal } from '@/components/inventory/AddProductModal';
 import { DeleteProductModal } from '@/components/inventory/DeleteProductModal';
 import { useProductStore } from '@/store/useProductStore';
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ListFilter, PenLine, Plus, Search, SlidersHorizontal, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ListFilter, PenLine, Plus, Search, SlidersHorizontal, Trash2, X } from 'lucide-react';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Toaster } from 'sonner';
 import { Product } from '../../../../types';
 import { EditProductModal } from '@/components/inventory/EditProductModal';
@@ -15,19 +15,60 @@ import { TableRowSkeleton } from '@/components/skeletons/TableRowSkeleton';
 export default function Inventory() {
 
   const { products, fetchProducts, isLoadingProducts } = useProductStore();
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [ isDeleteOpen, setIsDeleteOpen ] = useState(false);
   const [ productToDelete, setProductToDelete ] = useState<Product | null>(null);
   const [ productToUpdate, setProductToUpdate ] = useState<Product | null>(null);
+
+  const [ selectedCategory, setSelectedCategory ] = useState("Todos");
+  const [ sortBy, setSortBy ] = useState("name-asc"); 
+  const [ isFiltersOpen, setIsFiltersOpen ] = useState(false);
+
+  const categories = ["Todos", ...new Set(products.map(p => p.category.name || "General"))];
 
   useEffect(() => {
     fetchProducts();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   
-  const filteredProducts = products.filter((producto) =>
-    producto.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredAndSortedProducts = useMemo(() => {
+
+    let result = products.filter((product) => {
+      const matchCategory = selectedCategory === "Todos" || product.category.name === selectedCategory;
+      const matchSearch = product.name.toLowerCase().includes(searchTerm.toLocaleLowerCase()) || product.barcode.toLowerCase().includes(searchTerm.toLocaleLowerCase())
+
+      return matchCategory && matchSearch;
+    });
+
+    result = result.sort((a, b) => {
+
+      switch (sortBy) {
+        case 'name-asc': 
+          return a.name.localeCompare(b.name);
+        
+        case 'name-desc': 
+          return b.name.localeCompare(a.name);
+        
+        case 'price-asc':
+          return a.price - b.price;
+
+        case 'price-desc':
+          return b.price - a.price;
+
+        case 'newest':
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+
+        case 'oldest':
+          return new Date(a.createdAt).getDate() - new Date(b.createdAt).getDate();
+        
+        default: 
+          return 0;
+      }
+    });
+
+    return result;
+  }, [products, searchTerm, selectedCategory, sortBy])
 
   const getStatusConfig = (stock: number) => {
     if (stock === 0) return { text: "Out of stock", bg: "bg-red-50", textCol: "text-red-600", dot: "bg-red-500" };
@@ -39,36 +80,34 @@ export default function Inventory() {
     <div className='w-full h-full flex flex-col p-4 overflow-hidden bg-slate-50'>
       <Toaster/>
       <Header name='Inventario'/>
-      
-      {/* EL TRUCO: flex-wrap permite que si el sidebar empuja los elementos 
-        y ya no caben, salten a la siguiente línea suavemente. 
-      */}
-      <div className='mt-5 mb-6 flex flex-wrap justify-between items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-200'>
-        
-        {/* BUSCADOR FLUIDO: flex-1 le dice que crezca para rellenar, 
-          min-w-[250px] evita que se aplaste demasiado, 
-          max-w-md (opcional) evita que se estire a lo loco en pantallas gigantes. 
-        */}
+      <div className='mt-5 mb-4 flex flex-wrap justify-between items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-200'>
         <div className='relative flex-1 min-w-62.5 max-w-lg'>
           <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
             <Search className="text-gray-400" size={18} />
           </div>
-          <input 
-            type='text' 
-            placeholder='Buscar productos...' 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className='w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all duration-300'
-          />
+          <input type='text' 
+            placeholder='Buscar productos...' value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className='w-full pl-10 pr-8 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all duration-300'/>
+            {searchTerm && (
+              <button onClick={() => setSearchTerm("")} className='absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600'>
+                <X size={16}/>
+              </button>
+            )}
         </div>
-
-        {/* CONTENEDOR DE BOTONES FLUIDO */}
         <div className='flex flex-wrap items-center gap-3'>
-          <button className='flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors'>
-            <SlidersHorizontal size={17}/>
-            <span className='hidden sm:block'>Ordenar</span>
-          </button>
-          <button className='flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors'>
+          <div className='relative'>
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className='appearance-none flex items-center gap-2 px-4 py-2 pr-8 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 cursor-pointer bg-white'>
+              <option value={'name-asc'}>Nombre (A-Z)</option>
+              <option value={'name-desc'}>Nombre (Z-A)</option>
+              <option value={'price-desc'}>Mayor Precio</option>
+              <option value={'price-asc'}>Menor Precio</option>
+              <option value={'stock-desc'}>Mayor Stock</option>
+              <option value={'stock-asc'}>Menor Stock</option>
+              <option value={'newest'}>Más recientes</option>
+              <option value={'oldest'}>Más antiguos</option>
+            </select>
+            <SlidersHorizontal size={16} className='absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500'/>
+          </div>
+          <button onClick={() => setIsFiltersOpen(!isFiltersOpen)} className='flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors'>
             <ListFilter size={17}/>
             <span className='hidden sm:block'>Filtrar</span>
           </button>
@@ -76,6 +115,15 @@ export default function Inventory() {
             <Plus size={20}/>
             <span className='hidden sm:block'>Agregar Producto</span>
           </button>
+        </div>
+      </div>
+
+      <div className={`transition-all duration-300 ease-in-out ${isFiltersOpen ? 'max-h-20 opacity-100 mb-4' : 'max-h-0 opacity-0 mb-0 overflow-hidden'}`}>
+        <div className='bg-white p-3 rounded-xl border border-gray-200 shadow-sm flex items-center gap-2 overflow-x-auto custom-scrollbar'>
+        <span className='text-xs font-bold text-gray-400 uppercase mr-2'>Filtro:</span>
+        {categories.map((category) => (
+          <button key={category} onClick={() => setSelectedCategory(category)} className={`px-4 py-1.5 rounded-lg text-sm font-bold whitespace-nowrap transition-all border ${selectedCategory === category ? "bg-red-600 text-white border-red-600 shadow-md" : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"}`}>{category}</button>
+        ))}
         </div>
       </div>
 
@@ -94,7 +142,7 @@ export default function Inventory() {
               </tr>
             </thead>
             <tbody className='divide-y divide-gray-100'>
-              {filteredProducts.map((producto) => {
+              {filteredAndSortedProducts.map((producto) => {
                 const status = getStatusConfig(producto.stock);
                 return (
                   <tr key={producto.id} className='hover:bg-red-50/50 transition-colors duration-200 group'>
@@ -140,13 +188,13 @@ export default function Inventory() {
             </tbody>
           </table>
           {isLoadingProducts && (
-            <div className='flex flex-col w-full'>
+            <table className='flex flex-col w-full'>
               <tbody className='divide-y divide-gray-100 w-full'>
                 {[...Array(10)].map((_, i) => <TableRowSkeleton key={i}/>)}
               </tbody>
-            </div>
+            </table>
           )}
-          {filteredProducts.length === 0 && !isLoadingProducts && (
+          {filteredAndSortedProducts.length === 0 && !isLoadingProducts && (
             <div className="p-12 text-center text-gray-500 flex flex-col items-center">
               <Search className="w-12 h-12 mb-4 text-gray-300" />
               <h3 className="text-lg font-medium text-gray-900">No se encontraron productos</h3>
