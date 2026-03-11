@@ -1,20 +1,9 @@
-import { useCartStore } from '@/store/useCartStore';
 import { Banknote, Calculator, Minus, Plus, ShoppingCart, Trash, Trash2 } from 'lucide-react';
 import React, { useState } from 'react'
-
-interface Product {
-  id: number;
-  name: string;
-  sku: string;
-  price: number;
-  stock: number;
-  category: string;
-  color?: string;
-  qty: number;
-}
+import { CartItem } from '../../../types';
 
 interface OrderSumaryProps {
-  cart: Product[];
+  cart: CartItem[];
   subtotal: number;
   igv: number;
   total: number;
@@ -25,8 +14,6 @@ interface OrderSumaryProps {
 }
 
 export const OrderSumary = ({cart, subtotal, igv, total, OnRemoveItem, onUpdateQty, onClearCart, onProcessSale}: OrderSumaryProps) => {
-
-  console.log(cart)
 
   const [montoEntregado, setMontoEntregado] = useState<number>(0);
   const cambio = montoEntregado - total;
@@ -45,7 +32,7 @@ export const OrderSumary = ({cart, subtotal, igv, total, OnRemoveItem, onUpdateQ
   }
 
   return (
-    <div className='w-[35%] bg-white border-l border-gray-200 flex flex-col shadow-xl z-40'>
+    <div className='w-[35%] bg-white border-l border-gray-200 flex flex-col shadow-xl z-40 rounded-b-3xl overflow-y-auto'>
         <div className='flex p-4 border-b border-gray-100 bg-white'>
           <div className='flex justify-between items-center mb-2 w-full'>
             <div className='flex items-center space-x-1'>
@@ -67,7 +54,7 @@ export const OrderSumary = ({cart, subtotal, igv, total, OnRemoveItem, onUpdateQ
                       S/{item.price.toFixed(2)} x un.
                     </div>
                   </div>
-                  <p className='text-[13px] text-gray-400 font-mono'>{item.sku}</p>
+                  <p className='text-[13px] text-gray-400 font-mono'>{item.barcode}</p>
                 </div>
                 <button onClick={() => OnRemoveItem(item.id)} className="text-gray-300 hover:text-red-500 transition-colors">
                   <Trash2 size={16}/>
@@ -118,7 +105,7 @@ export const OrderSumary = ({cart, subtotal, igv, total, OnRemoveItem, onUpdateQ
                 </button>
             ))}
         </div>
-        <button onClick={handleCobrar} disabled={!isSufficient || !hasItems} className={`w-full mt-3 font-bold py-4 rounded-xl shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-lg uppercase tracking-wide ${isSufficient && hasItems ? "bg-red-500 hover:bg-red-600 text-white shadow-red-200 cursor-pointer" : "bg-gray-200 text-gray-400 cursor-not-allowed shadow-none"}`}>
+        <button onClick={handleCobrar} disabled={!isSufficient || !hasItems} className={`w-full mt-3  font-bold py-4 rounded-xl shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-lg uppercase tracking-wide ${isSufficient && hasItems ? "bg-red-500 hover:bg-red-600 text-white shadow-red-200 cursor-pointer" : "bg-gray-200 text-gray-400 cursor-not-allowed shadow-none"}`}>
             <Banknote size={24}/>
             <span>Cobrar S/{total.toFixed(2)}</span>
         </button>

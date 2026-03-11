@@ -60,7 +60,6 @@ export const useProductStore = create<ProductState>((set) => ({
     try {
       const response = await api.get('/products');
       set({ products: response.data, isLoadingProducts: false});
-      console.log(response.data)
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "An unknown error occurred in fetchProducts";
       set({ error: errorMessage, isLoadingProducts: false});
@@ -81,6 +80,7 @@ export const useProductStore = create<ProductState>((set) => ({
 
   createProduct: async (product) => {
     set({ isLoadingProduct: true, error: null})
+
     try {
       const response = await api.post('/products', product);
       set((state) => ({

@@ -1,16 +1,5 @@
 import { create } from "zustand";
-import { Product } from "./useProductStore";
-
-interface CartItem {
-  id: number;
-  name: string;
-  sku: string;
-  price: number;
-  stock: number;
-  category: string;
-  color?: string;
-  qty: number;
-}
+import { CartItem, Product } from "../../types";
 
 interface CartState {
   cart: CartItem[];
@@ -37,18 +26,12 @@ export const useCartStore = create<CartState>((set) => ({
           cart: [
             ...state.cart,
             {
-              id: product.id,
-              name: product.name,
-              sku: product.barcode,
-              price: product.price,
-              stock: product.stock,
-              category: product.category?.name || "General",
-              color: product.color,
+              ...product,
               qty: 1,
             },
           ],
         };
-      }
+    }
     });
   },
 

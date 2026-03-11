@@ -4,7 +4,7 @@ import { Header } from '@/components/Header';
 import { AddProductModal } from '@/components/inventory/AddProductModal';
 import { DeleteProductModal } from '@/components/inventory/DeleteProductModal';
 import { useProductStore } from '@/store/useProductStore';
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ListFilter, PenLine, Plus, Search, SlidersHorizontal, Trash2, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ListFilter, PenLine, Plus, Search, SlidersHorizontal, Trash2, X } from 'lucide-react';
 import Image from 'next/image';
 import React, { useEffect, useMemo, useState } from 'react'
 import { Toaster } from 'sonner';
@@ -58,6 +58,12 @@ export default function Inventory() {
 
         case 'price-desc':
           return b.price - a.price;
+
+        case 'stock-asc':
+          return a.stock - b.stock;
+
+        case 'stock-desc':
+          return b.stock - a.stock;
 
         case 'newest':
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
@@ -195,7 +201,7 @@ export default function Inventory() {
               })}
             </tbody>
           </table>
-          {isLoadingProducts && (
+          {isLoadingProducts && !filteredAndSortedProducts.length && (
             <table className='flex flex-col w-full'>
               <tbody className='divide-y divide-gray-100 w-full'>
                 {[...Array(10)].map((_, i) => <TableRowSkeleton key={i}/>)}

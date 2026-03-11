@@ -104,3 +104,9 @@ export interface Supplier {
   region: string;
   createdAt: Date;
 }
+
+// POS - carrito
+
+export interface CartItem extends Product {
+  qty: number;
+}
