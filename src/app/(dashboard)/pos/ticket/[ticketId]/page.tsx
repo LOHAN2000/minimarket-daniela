@@ -1,48 +1,30 @@
 "use client"
+import { useSalesStore } from '@/store/useSalesStore';
 import { ArrowLeft, Printer, ShoppingBag } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
-import React, { useEffect, useRef, useState } from 'react'
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import React, { useEffect, useRef } from 'react'
 import { useReactToPrint } from 'react-to-print';
-
-interface TicketData {
-  id: string;
-  fecha: string;
-  items: { name: string; qty: number; price: number; sku: string}[];
-  subtotal: number;
-  igv: number;
-  total: number;
-  vuelto: number;
-  pagoCon: number;
-  cajero: string;
-}
-
-const getTicketData = (id: string): TicketData => {
-  return {
-    id: id,
-    fecha: new Date().toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-    items: [
-      { name: "LECHE GLORIA AZUL 400G", qty: 2, price: 4.20, sku: "77501" },
-      { name: "COCA COLA 3L ORIGINAL", qty: 1, price: 11.50, sku: "77505" },
-      { name: "PAN DE MOLDE BIMBO", qty: 1, price: 5.80, sku: "77507" },
-    ],
-    subtotal: 21.78,
-    igv: 3.92,
-    total: 25.70,
-    pagoCon: 50.00,
-    vuelto: 24.30,
-    cajero: "DANIELA ADMIN",
-  };
-};
 
 export default function Ticketpage() {
 
+  const { getTicket, ticket, isLoadingTicket } = useSalesStore();
+
   const params = useParams();
+  const searchParams = useSearchParams();
+
   const router = useRouter();
   const ticketId = params.ticketId as string;
 
-  const ticket = ticketId ? getTicketData(ticketId) : null;
+  const pagoCon = Number(searchParams.get("pago")) || 0;
+  const vuelto = Number(searchParams.get("cambio")) || 0;
 
   const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (ticketId) {
+      getTicket(ticketId);
+    }
+  }, [getTicket, ticketId]);
 
 
   const handlePrint = useReactToPrint({
@@ -64,7 +46,13 @@ export default function Ticketpage() {
       }`
   });
 
-  if (!ticket) return <div className="min-h-screen flex items-center justify-center font-mono">Cargando...</div>;
+  if (isLoadingTicket) {
+    return <div className="min-h-screen flex items-center justify-center font-mono">Cargando...</div>;
+  }
+
+  if (!ticket) {
+    return <div className="min-h-screen flex items-center justify-center font-mono">No se encontró el ticket.</div>;
+  }
 
   return (
     // FONDO GRIS OSCURO PARA RESALTAR EL TICKET EN PANTALLA
@@ -106,7 +94,7 @@ export default function Ticketpage() {
         <div className="border-t border-dashed border-black py-2 mb-1">
             <div className="flex justify-between">
                 <span>Fecha:</span>
-                <span>{ticket.fecha}</span>
+                <span>{ticket.createdAt.toString().split("T")[0]}</span>
             </div>
             <div className="flex justify-between">
                 <span>Ticket:</span>
@@ -114,7 +102,7 @@ export default function Ticketpage() {
             </div>
             <div className="flex justify-between">
                 <span>Cajero:</span>
-                <span>{ticket.cajero}</span>
+                <span>{ticket.user?.unique_name || 'N/A'}</span>
             </div>
         </div>
 
@@ -127,13 +115,13 @@ export default function Ticketpage() {
             </div>
 
             <div className="flex flex-col gap-1">
-                {ticket.items.map((item, i) => (
+                {ticket.saleDetails.map((item, i) => (
                     <div key={i}>
                         <div className="flex">
-                            <span className="w-[10%] align-top">{item.qty}</span>
-                            <span className="w-[65%] uppercase leading-none">{item.name}</span>
+                            <span className="w-[10%] align-top">{item.quantity}</span>
+                            <span className="w-[65%] uppercase leading-none">{item.productName}</span>
                             <span className="w-[25%] text-right align-top">
-                                {(item.qty * item.price).toFixed(2)}
+                                {(item.quantity * item.unitPrice).toFixed(2)}
                             </span>
                         </div>
                     </div>
@@ -144,12 +132,12 @@ export default function Ticketpage() {
         <div className="border-t border-dashed border-black mt-2 pt-2 space-y-1">
             <div className="flex justify-between">
                 <span>OP. GRAVADA</span>
-                <span>S/ {ticket.subtotal.toFixed(2)}</span>
+                <span>S/ {ticket.total.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between">
+            {/* <div className="flex justify-between">
                 <span>I.G.V (18%)</span>
-                <span>S/ {ticket.igv.toFixed(2)}</span>
-            </div>
+                <span>S/ {ticket..toFixed(2)}</span>
+            </div> */}
             
             <div className="flex justify-between text-base font-bold border-t border-black border-dashed mt-1 pt-1">
                 <span>TOTAL</span>
@@ -160,11 +148,11 @@ export default function Ticketpage() {
         <div className="mt-2 pt-1 border-t border-dashed border-black space-y-1">
             <div className="flex justify-between">
                 <span>EFECTIVO:</span>
-                <span>S/ {ticket.pagoCon.toFixed(2)}</span>
+                <span>S/ {pagoCon.toFixed(2)}</span>
             </div>
             <div className="flex justify-between font-bold">
                 <span>VUELTO:</span>
-                <span>S/ {ticket.vuelto.toFixed(2)}</span>
+                <span>S/ {vuelto.toFixed(2)}</span>
             </div>
         </div>
 

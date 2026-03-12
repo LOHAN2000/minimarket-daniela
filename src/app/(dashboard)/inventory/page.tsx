@@ -11,10 +11,12 @@ import { Toaster } from 'sonner';
 import { Product } from '../../../../types';
 import { EditProductModal } from '@/components/inventory/EditProductModal';
 import { TableRowSkeleton } from '@/components/skeletons/TableRowSkeleton';
+import { useAuthStore } from '@/store/useAuthStore';
 
 export default function Inventory() {
 
   const { products, fetchProducts, isLoadingProducts } = useProductStore();
+  const { user } = useAuthStore();
   
   const [searchTerm, setSearchTerm] = useState("");
   const [ isDeleteOpen, setIsDeleteOpen ] = useState(false);
@@ -34,6 +36,8 @@ export default function Inventory() {
     fetchProducts();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  console.log(user)
   
   const filteredAndSortedProducts = useMemo(() => {
 

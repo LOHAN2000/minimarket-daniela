@@ -23,6 +23,7 @@ export interface User {
   UserName: string;
   role: string;
   Email: string;
+  nameid: number;
 }
 
 // Productos 
@@ -109,4 +110,58 @@ export interface Supplier {
 
 export interface CartItem extends Product {
   qty: number;
+}
+
+// Sales
+
+export interface CreateSaleDto {
+  paymentMethod: string,
+  userId: number,
+  items: {
+    productId: number,
+    quantity: number;
+  }[]
+}
+
+export interface SaleResponse {
+  message: string;
+  ticketCode: string;
+  total: number;
+  sale: Sale;
+}
+
+export interface Sale {
+  ticketCode: string;
+  total: number;
+  paymentMethod: string;
+  userId: number;
+  user: User | null;
+  saleDetails: SaleDetail[];
+  id: number;
+  createdBy: string;
+  createdAt: string;
+  updatedBy: string;
+  updatedAt: string | null;
+  deletedBy: string;
+  deletedAt: string | null;
+  isDeleted: boolean;
+}
+
+export interface SaleDetail {
+  saleId: number;
+  sale: Sale | null;
+  productId: number;
+  product: Product | null;
+  productName: string;
+  quantity: number;
+  unitPrice: number;
+  subTotal: number;
+  id: number;
+  createdBy: string;
+  createdAt: string;
+  updatedBy: string;
+  updatedAt: string | null;
+  deletedBy: string;
+  deletedAt: string | null;
+  isDeleted: boolean;
 }

@@ -10,7 +10,7 @@ interface OrderSumaryProps {
   OnRemoveItem: (id: number) => void;
   onUpdateQty: (id: number, delta: number) => void;
   onClearCart: () => void;
-  onProcessSale: () => void;
+  onProcessSale: (montoEntregado: number, cambio: number) => void;
 }
 
 export const OrderSumary = ({cart, subtotal, igv, total, OnRemoveItem, onUpdateQty, onClearCart, onProcessSale}: OrderSumaryProps) => {
@@ -26,7 +26,7 @@ export const OrderSumary = ({cart, subtotal, igv, total, OnRemoveItem, onUpdateQ
 
   const handleCobrar = () => {
     if(isSufficient && hasItems) {
-      onProcessSale();
+      onProcessSale(montoEntregado, cambio);
       setMontoEntregado(0);
     }
   }

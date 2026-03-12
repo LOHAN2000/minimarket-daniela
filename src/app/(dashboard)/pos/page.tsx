@@ -2,16 +2,19 @@
 import { OrderSumary } from '@/components/pos/OrderSumary';
 import { POSHeader } from '@/components/pos/POSHeader'
 import { ProductGrid } from '@/components/pos/ProductGrid'
+import { useAuthStore } from '@/store/useAuthStore';
 import { useCartStore } from '@/store/useCartStore'
 import { useProductStore } from "@/store/useProductStore";
+import { useSalesStore } from '@/store/useSalesStore';
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from 'react';
 import { toast, Toaster } from 'sonner';
 
 export default function POSPage() {
   const { cart, addToCart, updateQty, removeItem, clearCart } = useCartStore();
-  
   const { products, fetchProducts, isLoadingProducts } = useProductStore();
+  const { createSale } = useSalesStore();
+  const { user } = useAuthStore();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Todos");
@@ -56,7 +59,8 @@ export default function POSPage() {
     });
   }, [products, selectedCategory, searchTerm]);
 
-  const handleProcessSale = () => {
+
+  const handleProcessSale = async (montoEntregado: number, cambio: number) => {
     if(cart.length === 0) {
         toast.warning("El carrito está vacío");
         return;
@@ -64,13 +68,27 @@ export default function POSPage() {
 
     toast.success("Venta procesada con éxito");
     
-    const randomId = Math.floor(Math.random() * 9000) + 1000;
-    const ticketId = `TICKET-${randomId}`;
+    const saleData = {
+      paymentMethod: "Efectivo",
+      userId: Number(user?.nameid),
+      items: cart.map((item) => ({
+        productId: item.id,
+        quantity: item.qty
+      }))
+    };
 
-    setTimeout(() => {
-        router.push(`/pos/ticket/${ticketId}`);
-        clearCart(); 
-    }, 500); 
+    const response = await createSale(saleData);
+
+    if (response.success) {
+
+      toast.success("Venta procesada con éxito");
+      
+      setTimeout(() => {
+          router.push(`/pos/ticket/${(response.data as any)?.ticketCode}?pago=${montoEntregado}?cambio=${cambio}`);
+          clearCart(); 
+      }, 500); 
+    }
+
   }
 
   return (
