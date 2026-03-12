@@ -13,7 +13,7 @@ import { toast, Toaster } from 'sonner';
 export default function POSPage() {
   const { cart, addToCart, updateQty, removeItem, clearCart } = useCartStore();
   const { products, fetchProducts, isLoadingProducts } = useProductStore();
-  const { createSale } = useSalesStore();
+  const { createSale, error } = useSalesStore();
   const { user } = useAuthStore();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -66,8 +66,6 @@ export default function POSPage() {
         return;
     }
 
-    toast.success("Venta procesada con éxito");
-    
     const saleData = {
       paymentMethod: "Efectivo",
       userId: Number(user?.nameid),
@@ -79,7 +77,7 @@ export default function POSPage() {
 
     const response = await createSale(saleData);
 
-    if (response.success) {
+    if (response.success === true) {
 
       toast.success("Venta procesada con éxito");
       
@@ -87,8 +85,9 @@ export default function POSPage() {
           router.push(`/pos/ticket/${(response.data as any)?.ticketCode}?pago=${montoEntregado}?cambio=${cambio}`);
           clearCart(); 
       }, 500); 
+    } else {
+      toast.error(typeof response.error === 'string' ? response.error.split(": ")[1] : (response.error as any)?.message);
     }
-
   }
 
   return (

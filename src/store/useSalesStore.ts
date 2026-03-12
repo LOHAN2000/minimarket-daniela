@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { CreateSaleDto, Sale, StoreResult } from "../../types";
 import api from "@/lib/api";
 import { AxiosError } from "axios";
+import clsx from "clsx";
 
 interface SalesState {
   
@@ -27,7 +28,6 @@ export const useSalesStore = create<SalesState>((set) => ({
     try {
       const response = await api.post('/sales', saleData);
       set({ isLoadingSale: false })
-      console.log(response.data)
       return { success: true, data: response.data };
     } catch (error) {
       const err = error as AxiosError;
