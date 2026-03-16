@@ -2,7 +2,6 @@ import { create } from "zustand";
 import { CreateSaleDto, Sale, StoreResult } from "../../types";
 import api from "@/lib/api";
 import { AxiosError } from "axios";
-import clsx from "clsx";
 
 interface SalesState {
   
@@ -38,7 +37,7 @@ export const useSalesStore = create<SalesState>((set) => ({
   },
 
   getTicket: async (ticketCode) => {
-    set({ isLoadingSale: true });
+    set({ isLoadingTicket: true });
     
     try {
       const response = await api.get(`/sales/ticket/${ticketCode}`);

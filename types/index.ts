@@ -20,7 +20,7 @@ export interface newUser {
 export interface User {
   unique_name: string;
   LastName: string;
-  UserName: string;
+  Username: string;
   role: string;
   Email: string;
   nameid: number;
@@ -117,6 +117,8 @@ export interface CartItem extends Product {
 export interface CreateSaleDto {
   paymentMethod: string,
   userId: number,
+  amountPaid: number,
+  changeGiven: number,
   items: {
     productId: number,
     quantity: number;
@@ -134,6 +136,8 @@ export interface Sale {
   ticketCode: string;
   total: number;
   paymentMethod: string;
+  amountPaid: number,
+  changeGiven: number,
   userId: number;
   user: User | null;
   saleDetails: SaleDetail[];
