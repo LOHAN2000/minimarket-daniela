@@ -116,7 +116,7 @@ export default function Login() {
                     type="username"
                     name="username"
                     value={credentials.username}
-                    onChange={(e) => setCredentials({ ...credentials, [e.target.name]: e.target.value })}
+                    onChange={(e) => setCredentials({ ...credentials, [e.target.name]: e.target.value.trim() })}
                     className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl leading-5 bg-slate-50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 focus:bg-white transition-all duration-200 sm:text-sm font-medium"
                     placeholder="usuario"
                   />

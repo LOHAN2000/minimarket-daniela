@@ -119,3 +119,5 @@ export default function POSPage() {
     </div>
   )
 }
+
+// Agregar más color

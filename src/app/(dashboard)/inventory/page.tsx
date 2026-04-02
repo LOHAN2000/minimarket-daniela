@@ -90,7 +90,7 @@ export default function Inventory() {
 
   const getStatusConfig = (stock: number) => {
     if (stock === 0) return { text: "Out of stock", bg: "bg-red-50", textCol: "text-red-600", dot: "bg-red-500" };
-    if (stock < 20) return { text: "Low Stock", bg: "bg-orange-50", textCol: "text-orange-600", dot: "bg-orange-500" };
+    if (stock < 6) return { text: "Low Stock", bg: "bg-orange-50", textCol: "text-orange-600", dot: "bg-orange-500" };
     return { text: "In Stock", bg: "bg-green-50", textCol: "text-green-600", dot: "bg-green-500" };
   };
 
@@ -253,3 +253,8 @@ export default function Inventory() {
     </div>
   )
 }
+
+//TODO: 
+// Agregar fecha de vencimiento.
+// Agregar imagenes de los productos.
+// Agregar marca del producto a la base de datos.
