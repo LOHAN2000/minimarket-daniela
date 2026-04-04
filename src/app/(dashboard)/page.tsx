@@ -1,9 +1,20 @@
 "use client"
 import { SalesChart } from "@/components/SalesChart";
 import { StatCard } from "@/components/StatCard";
+import { useDashBoardStore } from "@/store/useDashboardStore";
 import { DollarSign, Package, ShoppingBasket, Users } from "lucide-react";
+import { useEffect } from "react";
 
 export default function Home() {
+
+  const { stats, fetchStats } = useDashBoardStore();
+
+  useEffect(() => {
+    fetchStats();
+  }, [])
+
+  console.log(stats);
+
   return (
     <div className="flex flex-col gap-8">
       

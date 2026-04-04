@@ -169,3 +169,18 @@ export interface SaleDetail {
   deletedAt: string | null;
   isDeleted: boolean;
 }
+
+// Dashboard
+export interface StatPeriod {
+  ingresos: number,
+  ingresosCambio: number;
+  ventasCambio: number;
+  ventasPromedio: number;
+  productosBajos: number;
+}
+
+export interface DashboardData {
+  daily: StatPeriod;
+  weekly: StatPeriod;
+  monthly: StatPeriod;
+}
