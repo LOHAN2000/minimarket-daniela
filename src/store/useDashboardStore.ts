@@ -26,4 +26,4 @@ export const useDashBoardStore = create<DashboardState>((set) => ({
       set({ error: errorMessage, isLoading: false});
     }
   }
-}))
+})) 

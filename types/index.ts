@@ -174,8 +174,9 @@ export interface SaleDetail {
 export interface StatPeriod {
   ingresos: number,
   ingresosCambio: number;
+  ventas: number;
   ventasCambio: number;
-  ventasPromedio: number;
+  ticketPromedio: number;
   productosBajos: number;
 }
 
@@ -183,4 +184,16 @@ export interface DashboardData {
   daily: StatPeriod;
   weekly: StatPeriod;
   monthly: StatPeriod;
+  topProducts: TopProduct[];
+  chartData: ChartData[];
+}
+
+export interface TopProduct {
+  name: string;
+  quantitySold: number;
+}
+
+export interface ChartData {
+  dateLabel: string;
+  totalSales: number;
 }
