@@ -44,6 +44,7 @@ export default function Home() {
             changeAmount={`${currentStats.ingresosCambio > 0 ? '+' : ''}${currentStats.ingresosCambio.toFixed(1)}%`} 
             IconComponent={DollarSign} 
             color="green"
+            filter={timefilter}
         />
         <StatCard 
             title="Tickets Emitidos" 
@@ -51,6 +52,7 @@ export default function Home() {
             changeAmount={`${currentStats.ventasCambio > 0 ? '+' : ''}${currentStats.ventasCambio.toFixed(1)}%`} 
             IconComponent={ShoppingBasket} 
             color="purple"
+            filter={timefilter}
         />
         <StatCard 
             title="Ticket Promedio" 
@@ -58,6 +60,8 @@ export default function Home() {
             changeAmount="N/A" // Ticket promedio suele ser constante, pero puedes agregarle cambio también
             IconComponent={Users} 
             color="blue"
+            filter={timefilter}
+
         />
         <StatCard 
             title="Alertas de Stock" 
@@ -65,22 +69,23 @@ export default function Home() {
             changeAmount="ítems" 
             IconComponent={Package} 
             color="red"
+            filter={timefilter}
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-81">
-          <div className="lg:col-span-2 h-full">
+      <div className="flex flex-row gap-10">
+          <div className="grow h-full">
             <SalesChart data={stats.chartData}/>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-full flex flex-col">
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-full flex-none flex-col">
             <h3 className="text-lg font-bold text-gray-800 mb-4">Productos Populares</h3>
-            <div className="space-y-4 flex-1 overflow-y-auto custom-scrollbar pr-2">
+            <div className="space-y-4 flex overflow-y-auto custom-scrollbar pr-2">
                 
                 {/* Iteramos sobre el Top 5 real */}
                 {stats.topProducts && stats.topProducts.length > 0 ? (
                   stats.topProducts.map((item, i) => (
-                    <div key={i} className="flex justify-between items-center py-2.5 border-b border-gray-50 last:border-0">
+                    <div key={i} className="flex justify-between items-center py-2.5 border-b border-gray-50 last:border-0 space-x-2">
                         <div className="flex flex-col">
                           <span className="text-gray-700 text-sm font-bold line-clamp-1">{item.name}</span>
                           <span className="text-gray-400 text-xs">{item.quantitySold} vendidas</span>
