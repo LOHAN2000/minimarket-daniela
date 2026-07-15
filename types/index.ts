@@ -26,6 +26,15 @@ export interface User {
   nameid: number;
 }
 
+export interface UpdateUser {
+  name?: string,
+  lastName?: string,
+  email?: string,
+  userName?: string,
+  password?: string,
+  role?: string
+}
+
 // Productos 
 
 export interface Product {
