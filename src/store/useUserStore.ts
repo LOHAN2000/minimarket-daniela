@@ -4,6 +4,7 @@ import api from "@/lib/api";
 import { AxiosError } from "axios";
 
 interface UserState {
+  user: User | null;
   users: User[];
   isLoadingUsers: boolean;
   isLoadingUpdateUser: boolean;
@@ -13,12 +14,14 @@ interface UserState {
   error: string | null; 
 
   fetchUsers: () => Promise<void>;
+  getUserById: (id: number) => Promise<{ success: boolean; data?: User; error?: string }>;
   createUser: (data: newUser) => Promise<{ success: boolean; data?: User; error?: string }>;
   updateUser: (id: number, data: UpdateUser) => Promise<{ success: boolean; data?: User; error?: string }>
   deleteUser: (id: number) => Promise<{ success: boolean; data?: User; error?: string }>
 }
 
 export const userUserStore = create<UserState>((set) => ({
+  user: null,
   users: [],
   isLoadingUsers: false,
   isLoadingUpdateUser: false,
@@ -71,6 +74,19 @@ export const userUserStore = create<UserState>((set) => ({
     }
   },
 
+  getUserById: async (id) => {
+    set({ isLoadingUser: true, error: null });
+    try {
+      const response = await api.get(`/api/users/${id}`);
+      set({ user: response.data, isLoadingUser: false});
+      return { success: true, data: response.data };
+    } catch (error) {
+      const err = error as AxiosError;
+      const errorMessage = err.response?.data as string || "Error al editar usuario.";
+      return { success: false, error: errorMessage };
+    }
+  },
+
   deleteUser: async (id) => {
     set({ isLoadingDeleteUser: true, error: null });
     try {
@@ -87,7 +103,4 @@ export const userUserStore = create<UserState>((set) => ({
       return { success: false, error: errorMessage };
     }
   }
-
 }))
-
-// Que flojeraaaaaaaaaaaaaaaaaaa
