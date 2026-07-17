@@ -20,7 +20,7 @@ interface UserState {
   deleteUser: (id: number) => Promise<{ success: boolean; data?: User; error?: string }>
 }
 
-export const userUserStore = create<UserState>((set) => ({
+export const useUserStore = create<UserState>((set) => ({
   user: null,
   users: [],
   isLoadingUsers: false,
@@ -33,7 +33,7 @@ export const userUserStore = create<UserState>((set) => ({
   fetchUsers: async () => {
     set({ isLoadingUsers: true, error: null});
     try {
-      const response = await api.get('/users');
+      const response = await api.get('/auth/users');
       set({ users: response.data, isLoadingUsers: false});
     } catch (error) {
       const err = error as AxiosError;
@@ -61,7 +61,7 @@ export const userUserStore = create<UserState>((set) => ({
   updateUser: async (id, data) => {
     set({ isLoadingUpdateUser: true, error: null });
     try {
-      const response = await api.put(`/users/${id}`, data);
+      const response = await api.put(`/auth/users/${id}`, data);
       set((state) => ({
         users: state.users.map((user) => user.nameid === id ? { ...user, ...data} : user),
         isLoadingUpdateUser: false
@@ -77,7 +77,7 @@ export const userUserStore = create<UserState>((set) => ({
   getUserById: async (id) => {
     set({ isLoadingUser: true, error: null });
     try {
-      const response = await api.get(`/api/users/${id}`);
+      const response = await api.get(`/auth/users/${id}`);
       set({ user: response.data, isLoadingUser: false});
       return { success: true, data: response.data };
     } catch (error) {
@@ -90,7 +90,7 @@ export const userUserStore = create<UserState>((set) => ({
   deleteUser: async (id) => {
     set({ isLoadingDeleteUser: true, error: null });
     try {
-      const response = await api.delete(`/users/${id}`)
+      const response = await api.delete(`/auth/users/${id}`)
       set((state) => ({
         users: state.users.filter((user) => user.nameid !== id),
         isLoadingDeleteUser: false

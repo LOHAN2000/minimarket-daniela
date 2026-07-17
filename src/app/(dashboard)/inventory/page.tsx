@@ -36,8 +36,6 @@ export default function Inventory() {
     fetchProducts();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  console.log(user)
   
   const filteredAndSortedProducts = useMemo(() => {
 
@@ -144,7 +142,7 @@ export default function Inventory() {
         ))}
         </div>
       </div>
-
+      {/* Tabla de Productos */}
       <div className='bg-white shadow-sm rounded-xl border border-gray-200 flex flex-col flex-1 overflow-y-auto w-full'>
         <div className='overflow-x-auto '>
           <table className='w-full text-left border-collapse whitespace-nowrap'>

@@ -98,7 +98,7 @@ export default function Ticketpage() {
           </div>
           <div className='flex justify-between'>
             <span>CAJERO:</span>
-            <span>{user?.Username.toUpperCase()}</span>
+            <span>{user?.username.toUpperCase()}</span>
           </div>
         </div>
 

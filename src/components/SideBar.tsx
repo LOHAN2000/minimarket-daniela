@@ -1,6 +1,6 @@
 "use client"
 import { useGlobalState } from '@/store'
-import { DollarSign, LayoutDashboard, LogOut, Menu, Package, ShoppingCart, LucideIcon } from 'lucide-react'
+import { DollarSign, LayoutDashboard, LogOut, Menu, Package, ShoppingCart, LucideIcon, Users } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
@@ -16,7 +16,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/pos", label: "Venta", icon: DollarSign },
-  { href: "/products", label: "Productos", icon: ShoppingCart },
+  { href: "/users", label: "Usuarios", icon: Users },
   { href: "/inventory", label: "Inventario", icon: Package },
 ];
 

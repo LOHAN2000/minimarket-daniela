@@ -12,8 +12,8 @@ export const DashBoardWrapper = ({ children }: { children: React.ReactNode }) =>
   const pathname = usePathname();
 
   // Lógica simplificada: Definimos en qué rutas NO queremos la Navbar
-  const hiddenNavbarPaths = ["/pos", "/inventory", "/products"];
-  
+  const hiddenNavbarPaths = ["/pos", "/inventory", "/users", "/"];
+  // Actualización, esto es inutil
   // Verificamos si la ruta actual está en la lista de ocultas
   // Si NO está incluida, entonces mostramos la Navbar
   const isNavbarVisible = !hiddenNavbarPaths.includes(pathname);

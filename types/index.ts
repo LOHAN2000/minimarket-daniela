@@ -20,10 +20,14 @@ export interface newUser {
 export interface User {
   unique_name: string;
   LastName: string;
-  Username: string;
+  username: string;
   role: string;
   Email: string;
   nameid: number;
+  id: number;
+  name: string;
+  lastName: string;
+  email: string;
 }
 
 export interface UpdateUser {
