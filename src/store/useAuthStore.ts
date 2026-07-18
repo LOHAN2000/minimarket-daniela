@@ -18,57 +18,69 @@ interface AuthState {
   registerUser: (newUser: newUser) => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>()( persist((set) => ({
-  token: null,
-  user: null,
-  isLoading: false,
-  error: null,
-  isAuthenticated: false,
-  login: async (username, password) => {
-    set({ isLoading: true, error: null }); // Empezamos carga
-    try {
-      const { data } = await api.post('/auth/login', { username, password });
-      const decodedUser = jwtDecode<User>(data.token);
+export const useAuthStore = create<AuthState>()( 
+  persist(
+    (set) => ({
+      token: null,
+      user: null,
+      isLoading: false,
+      error: null,
+      isAuthenticated: false,
+      
+      login: async (username, password) => {
+        set({ isLoading: true, error: null }); // Empezamos carga
+        try {
+          const { data } = await api.post('/auth/login', { username, password });
+          const decodedUser = jwtDecode<User>(data.token);
 
-      Cookies.set('token', data.token, { expires: 1/3, secure: true, sameSite: 'strict' });
+          // Ajuste clave: path '/', secure dinámico y sameSite 'lax'
+          Cookies.set('token', data.token, { 
+            expires: 1/3, // Expira en 8 horas
+            secure: process.env.NODE_ENV === 'production', 
+            sameSite: 'lax',
+            path: '/' 
+          });
 
-      set({ token: data.token, user: decodedUser, isAuthenticated: true, isLoading: false });
-      toast.success("Inicio de sesión exitoso");
-    } catch (error: any) {
-      set({  isLoading: false})
-      const errorMessage = error.response?.data?.error || error.response?.data?.message || "Error de conexión con el servidor";
-      set({ error: errorMessage });
-      toast.error(errorMessage);
-    }
-  },
-  registerUser: async (newUser) => {
-    set({ isLoading: true, error: null});
-    try {
-      const response = await api.post('/auth/register', newUser);
-      set({ isLoading: false});
-      toast.success(response.data.message)
-    } catch (error: any) {
-      set({  isLoading: false})
-      const errorMessage = error.response?.data?.error || error.response?.data?.message || "Error de conexión con el servidor";
-      set({ error: errorMessage });
-      toast.error(errorMessage);
-    }
-  },
+          set({ token: data.token, user: decodedUser, isAuthenticated: true, isLoading: false });
+          toast.success("Inicio de sesión exitoso");
+        } catch (error: any) {
+          set({ isLoading: false });
+          const errorMessage = error.response?.data?.error || error.response?.data?.message || "Error de conexión con el servidor";
+          set({ error: errorMessage });
+          toast.error(errorMessage);
+        }
+      },
+      
+      registerUser: async (newUser) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await api.post('/auth/register', newUser);
+          set({ isLoading: false });
+          toast.success(response.data.message);
+        } catch (error: any) {
+          set({ isLoading: false });
+          const errorMessage = error.response?.data?.error || error.response?.data?.message || "Error de conexión con el servidor";
+          set({ error: errorMessage });
+          toast.error(errorMessage);
+        }
+      },
 
-  setAuth: (token, user) => set({ token, user, isAuthenticated: true}),
-  logout: () => {
-    Cookies.remove('token');
-    set({ token: null, user: null, isAuthenticated: false})
-    window.location.href = '/login'
-  }
-    
-}),
-  {
-    name: "auth-storage",
-    partialize: (state) => ({
-      token: state.token,
-      user: state.user,
-      isAuthenticated: state.isAuthenticated
+      setAuth: (token, user) => set({ token, user, isAuthenticated: true }),
+      
+      logout: () => {
+        // Aseguramos que se borre de la misma ruta donde se creó
+        Cookies.remove('token', { path: '/' });
+        set({ token: null, user: null, isAuthenticated: false });
+        window.location.href = '/login';
+      }
     }),
-  }
-));
+    {
+      name: "auth-storage",
+      partialize: (state) => ({
+        token: state.token,
+        user: state.user,
+        isAuthenticated: state.isAuthenticated
+      }),
+    }
+  )
+);

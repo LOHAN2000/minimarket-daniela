@@ -8,6 +8,7 @@ const api = axios.create({
   },
 })
 
+// Interceptor de peticiones: Agrega el token si existe
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().token;
   if (token) {
@@ -17,17 +18,20 @@ api.interceptors.request.use((config) => {
   return config;
 })
 
+// Interceptor de respuestas: Maneja errores
 api.interceptors.response.use(
   (response) => response, 
   (error) => {
-    if (error.response.status === 401) {
-      console.warn("Token expirado o no autorizado. Cerrando sesión...")
+    // 1. CAMBIO IMPORTANTE: Usamos '?.' (Optional Chaining) para evitar crasheos si no hay respuesta del servidor
+    if (error.response?.status === 401) {
+      console.warn("Token expirado o no autorizado. Cerrando sesión...");
 
       useAuthStore.getState().logout();
       return Promise.reject(error);
-    } else {
-      return Promise.reject(error);
     }
+    
+    // Devolvemos el error para que el bloque catch de Zustand lo maneje
+    return Promise.reject(error);
   }
 )
 
