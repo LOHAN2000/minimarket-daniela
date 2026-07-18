@@ -18,25 +18,24 @@ export interface newUser {
 }
 
 export interface User {
-  unique_name: string;
-  LastName: string;
-  username: string;
-  role: string;
-  Email: string;
-  nameid: number;
-  id: number;
-  name: string;
-  lastName: string;
-  email: string;
+  unique_name?: string;
+  name?: string;
+  lastName?: string;
+  username?: string;
+  role?: string;
+  email?: string;
+  id?: number | null;
+  password?: string;
 }
 
 export interface UpdateUser {
-  name?: string,
-  lastName?: string,
-  email?: string,
-  userName?: string,
-  password?: string,
-  role?: string
+  Name?: string,
+  LastName?: string,
+  Email?: string,
+  UserName?: string,
+  Password?: string,
+  Role?: string,
+  id?: number | null;
 }
 
 // Productos 

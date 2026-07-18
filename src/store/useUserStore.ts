@@ -1,10 +1,10 @@
 import { create } from "zustand";
-import { newUser, UpdateUser, User } from "../../types";
+import { User } from "../../types";
 import api from "@/lib/api";
 import { AxiosError } from "axios";
 
 interface UserState {
-  user: User | null;
+  editingUser: User | null;
   users: User[];
   isLoadingUsers: boolean;
   isLoadingUpdateUser: boolean;
@@ -15,13 +15,13 @@ interface UserState {
 
   fetchUsers: () => Promise<void>;
   getUserById: (id: number) => Promise<{ success: boolean; data?: User; error?: string }>;
-  createUser: (data: newUser) => Promise<{ success: boolean; data?: User; error?: string }>;
-  updateUser: (id: number, data: UpdateUser) => Promise<{ success: boolean; data?: User; error?: string }>
+  createUser: (data: User) => Promise<{ success: boolean; data?: User; error?: string }>;
+  updateUser: (id: number, data: User) => Promise<{ success: boolean; data?: User; error?: string }>
   deleteUser: (id: number) => Promise<{ success: boolean; data?: User; error?: string }>
 }
 
 export const useUserStore = create<UserState>((set) => ({
-  user: null,
+  editingUser: null,
   users: [],
   isLoadingUsers: false,
   isLoadingUpdateUser: false,
@@ -45,9 +45,9 @@ export const useUserStore = create<UserState>((set) => ({
   createUser: async (data) => {
     set({ isLoadingCreateUser: true, error: null })
     try {
-      const response = await api.post('/users', data);
+      const response = await api.post('/auth/register', data);
       set((state) => ({
-        users: [...state.users, response.data],
+        users: [...state.users, response.data.user],
         isLoadingCreateUser: false
       }))
       return { success: true, data: response.data };
@@ -63,7 +63,7 @@ export const useUserStore = create<UserState>((set) => ({
     try {
       const response = await api.put(`/auth/users/${id}`, data);
       set((state) => ({
-        users: state.users.map((user) => user.nameid === id ? { ...user, ...data} : user),
+        users: state.users.map((user) => user.id === id ? { ...user, ...response.data.userUpdated} : user),
         isLoadingUpdateUser: false
       }));
       return { success: true, data: response.data };
@@ -78,7 +78,7 @@ export const useUserStore = create<UserState>((set) => ({
     set({ isLoadingUser: true, error: null });
     try {
       const response = await api.get(`/auth/users/${id}`);
-      set({ user: response.data, isLoadingUser: false});
+      set({ editingUser: response.data, isLoadingUser: false});
       return { success: true, data: response.data };
     } catch (error) {
       const err = error as AxiosError;
@@ -92,7 +92,7 @@ export const useUserStore = create<UserState>((set) => ({
     try {
       const response = await api.delete(`/auth/users/${id}`)
       set((state) => ({
-        users: state.users.filter((user) => user.nameid !== id),
+        users: state.users.filter((user) => user.id !== id),
         isLoadingDeleteUser: false
       }))
       return { success: true, data: response.data }
