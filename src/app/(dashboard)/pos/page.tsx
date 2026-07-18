@@ -68,7 +68,7 @@ export default function POSPage() {
 
     const saleData = {
       paymentMethod: "Efectivo",
-      userId: Number(user?.nameid),
+      userId: Number(user?.id),
       amountPaid: montoEntregado,
       changeGiven: cambio,
       items: cart.map((item) => ({
