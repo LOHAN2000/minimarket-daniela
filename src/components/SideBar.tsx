@@ -65,7 +65,7 @@ export const SideBar = () => {
         {isMounted && user ? (
           <div className={`flex items-center gap-3 ${isSideBarCollapsed ? 'justify-center' : 'p-2'}`}>
             <div className='w-10 h-10 bg-red-100 text-red-600 rounded-full flex items-center justify-center font-bold shrink-0'>
-              {(user?.unique_name)?.charAt(0).toUpperCase() + "" + (user?.lastName)?.charAt(0).toUpperCase()}
+              {(user?.name)?.charAt(0).toUpperCase() + "" + (user?.lastName)?.charAt(0).toUpperCase()}
             </div>
             {!isSideBarCollapsed && (
               <>
