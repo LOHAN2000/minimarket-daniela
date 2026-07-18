@@ -173,12 +173,12 @@ export const AddProductModal = () => {
               </h2>
 
               <div className='flex flex-col sm:flex-row w-full gap-4'>
-                <div className='flex-1 group'>
+                <div className='flex-1 group overflow-hidden'>
                   <label className='text-sm font-semibold text-slate-700 tracking-wide mb-1.5 block'>Proveedor Existente</label>
-                  <select name='supplierId' onChange={(e) => setNewProduct({...newProduct, supplierId: Number(e.target.value)})} value={newProduct.supplierId} className="select select-bordered w-full bg-white text-gray-700 border-gray-200 rounded-lg focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:bg-white transition-all duration-300">
-                    <option value={0} disabled className="text-gray-400">Selecciona un proveedor</option>
+                  <select name='supplierId' onChange={(e) => setNewProduct({...newProduct, supplierId: Number(e.target.value)})} value={newProduct.supplierId} className="overflow-hidden select select-bordered w-full bg-white text-gray-700 border-gray-200 rounded-lg focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:bg-white transition-all duration-300">
+                    <option value={0} disabled className="text-gray-400 truncate">Selecciona un proveedor</option>
                     {suppliers?.map((item) => (
-                      <option key={item.id} value={item.id} className='text-gray-700 bg-white'>{item?.bussinessName}</option>
+                      <option key={item.id} value={item.id} className='text-gray-700 bg-white truncate'>{item?.bussinessName}</option>
                     ))}
                   </select>
                 </div>

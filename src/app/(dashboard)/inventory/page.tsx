@@ -28,7 +28,7 @@ export default function Inventory() {
   const [ currentPage, setCurrentPage ] = useState(1);
   const [ itemsPerPage, setItemsPerPage ] = useState(10);
 
-  const categories = ["Todos", ...new Set(products.map(p => p.category.name || "General"))];
+  const categories = ["Todos", ...new Set(products.map(p => p.category?.name || "General"))];
 
   useEffect(() => {
     fetchProducts();
