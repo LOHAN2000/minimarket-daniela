@@ -78,9 +78,9 @@ export default function Home() {
             <SalesChart data={stats.chartData}/>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-full flex-none flex-col">
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-full flex-1 min-h-[350px] flex flex-col">
             <h3 className="text-lg font-bold text-gray-800 mb-4">Productos Populares</h3>
-            <div className="space-y-4 flex overflow-y-auto custom-scrollbar pr-2">
+            <div className="flex flex-col space-y-4 overflow-y-auto custom-scrollbar pr-2">
                 
                 {/* Iteramos sobre el Top 5 real */}
                 {stats.topProducts && stats.topProducts.length > 0 ? (

@@ -72,20 +72,20 @@ export const AddUserModal = ({ user }: Props) => {
           <div className='flex flex-col sm:flex-row w-full gap-4'>
             <div className='w-full flex flex-col group'>
               <label className='text-sm font-semibold text-slate-700 tracking-wide ms-1 mb-1.5 block'>Nombre</label>
-              <input value={formData?.name} onChange={(e) => setFormData({...formData!, [e.target.name]: e.target.value})} type='text' name='name' className='w-full px-2 py-1 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-red-500 focus:ring-red-500 transition-all'/>
+              <input value={formData?.name || ''} onChange={(e) => setFormData({...formData!, [e.target.name]: e.target.value})} type='text' name='name' className='w-full px-2 py-1 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-red-500 focus:ring-red-500 transition-all'/>
             </div>
             <div className='w-full flex flex-col group'>
               <label className='text-sm font-semibold text-slate-700 tracking-wide ms-1 mb-1.5 block'>Apellidos</label>
-              <input value={formData?.lastName} onChange={(e) => setFormData({...formData!, [e.target.name]: e.target.value})} type='text' name='lastName' className='w-full px-2 py-1 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-red-500 focus:ring-red-500 transition-all'/>
+              <input value={formData?.lastName || ''} onChange={(e) => setFormData({...formData!, [e.target.name]: e.target.value})} type='text' name='lastName' className='w-full px-2 py-1 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-red-500 focus:ring-red-500 transition-all'/>
             </div>
           </div>
           <div className='w-full flex flex-col group'>
             <label className='text-sm font-semibold text-slate-700 tracking-wide ms-1 mb-1.5 block'>Nombre de Usuario</label>
-            <input disabled={!!user?.id} value={formData?.username} onChange={(e) => setFormData({...formData!, [e.target.name]: e.target.value})} type='text' name='username' className='w-full px-2 py-1 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-red-500 focus:ring-red-500 transition-all'/>
+            <input disabled={!!user?.id} value={formData?.username || ''} onChange={(e) => setFormData({...formData!, [e.target.name]: e.target.value})} type='text' name='username' className='w-full px-2 py-1 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-red-500 focus:ring-red-500 transition-all'/>
           </div>
           <div className='w-full flex flex-col group'>
             <label className='text-sm font-semibold text-slate-700 tracking-wide ms-1 mb-1.5 block'>Correo Electrónico</label>
-            <input value={formData?.email} onChange={(e) => setFormData({...formData!, [e.target.name]: e.target.value})} type='email' name='email' className='w-full px-2 py-1 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-red-500 focus:ring-red-500 transition-all'/>
+            <input value={formData?.email || ''} onChange={(e) => setFormData({...formData!, [e.target.name]: e.target.value})} type='email' name='email' className='w-full px-2 py-1 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-red-500 focus:ring-red-500 transition-all'/>
           </div>
           <div className='flex flex-col sm:flex-row w-full gap-4'>
             <div className='flex flex-col w-full'>
@@ -97,7 +97,7 @@ export const AddUserModal = ({ user }: Props) => {
             </div>
             <div className='flex flex-col w-full'>
               <label className='text-sm font-semibold text-slate-700 tracking-wide ms-1 mb-1.5 block'>Contraseña</label>
-              <input type='password' name='password' value={formData?.password} onChange={(e) => setFormData({...formData!, [e.target.name]: e.target.value})} className='w-full px-2 py-1 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-red-500 focus:ring-red-500 transition-all'/>
+              <input type='password' name='password' value={formData?.password || ''} onChange={(e) => setFormData({...formData!, [e.target.name]: e.target.value})} className='w-full px-2 py-1 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-red-500 focus:ring-red-500 transition-all'/>
             </div>
           </div>
           <div className='flex flex-col sm:flex-row h-7'>
@@ -106,9 +106,9 @@ export const AddUserModal = ({ user }: Props) => {
                 {error}
               </div>
             )}
-            <div className='flex gap-2 ms-auto'>
+            <div className='flex flex-row gap-2 justify-end w-full'>
               <button onClick={() => {const modal = document.getElementById('modal_add_user') as HTMLDialogElement; modal?.close();}} type='button' className='flex items-center gap-2 px-4 py2 border border-gray-200 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer'>Cancel</button>
-              <button onClick={handleSubmit} disabled={!user?.id && (!formData?.name ||!formData?.lastName ||!formData?.username || !formData?.email || !formData?.role ||!formData?.password)} type='submit' className='flex items-center gap-2 min-w-35 px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-xs font-bold transition-all shadow-md shadow-red-600/20 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden cursor-pointer'>{isLoadingCreateUser || isLoadingUpdateUser ? <Loader2 className='animate-spin mx-auto size-auto py-5'/> : (user?.id ? 'Guardar Cambios' : 'Crear Usuario')}</button>
+              <button onClick={handleSubmit} disabled={!user?.id && (!formData?.name ||!formData?.lastName ||!formData?.username || !formData?.email || !formData?.role ||!formData?.password)} type='submit' className='flex items-center px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-xs font-bold transition-all shadow-md shadow-red-600/20 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden cursor-pointer'>{isLoadingCreateUser || isLoadingUpdateUser ? <Loader2 className='animate-spin mx-auto size-auto py-5'/> : (user?.id ? 'Guardar Cambios' : 'Crear Usuario')}</button>
             </div>
           </div>
         </form>

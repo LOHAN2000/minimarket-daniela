@@ -26,6 +26,7 @@ export interface User {
   email?: string;
   id?: number | null;
   password?: string;
+  LastName?: string;
 }
 
 export interface UpdateUser {
